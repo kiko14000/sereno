@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Sereno</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+  <style>
+    :root{--brun:#3D2B1F;--terra:#C4805A;--terra-mid:#B07C60;--peche:#E8C4A8;--ivoire:#FAF6F1;--fond:#F0EAE2;--sauge:#6B9E8A;--brun-texte:#7A6055;--brun-light:#D4C4B8;--brun-border:#E0D5CA;--brun-bg:#F5EDE3;}
+    *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+    body{background:var(--fond);font-family:"DM Sans",sans-serif;display:flex;justify-content:center;align-items:flex-start;min-height:100vh;padding:2rem 1rem;}
+    .phone-shell{width:375px;min-height:812px;background:var(--ivoire);border-radius:40px;border:2px solid var(--brun-border);overflow:hidden;position:relative;box-shadow:0 20px 60px rgba(61,43,31,0.15);display:flex;flex-direction:column;}
+    .screen{display:none;flex-direction:column;flex:1;overflow-y:auto;}
+    .screen.active{display:flex;}
+    .status-bar{background:var(--ivoire);padding:14px 22px 6px;display:flex;justify-content:space-between;align-items:center;flex-shrink:0;}
+    .status-time{font-size:14px;font-weight:500;color:var(--brun);}
+    .status-icons{display:flex;gap:4px;}
+    .status-icons i{font-size:15px;color:var(--brun);}
+    .status-bar.dark{background:var(--brun);}
+    .status-bar.dark .status-time,.status-bar.dark .status-icons i{color:var(--ivoire);}
+    .page-header{background:var(--brun);padding:1rem 1.4rem 1.3rem;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+    .page-title{font-family:"Cormorant Garamond",serif;font-weight:300;font-size:26px;color:var(--ivoire);}
+    .h-icon{width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,0.1);display:flex;align-items:center;justify-content:center;cursor:pointer;}
+    .h-icon i{font-size:17px;color:var(--peche);}
+    .proche-pill{background:rgba(255,255,255,0.12);border-radius:20px;padding:4px 10px;display:flex;align-items:center;gap:6px;}
+    .proche-dot{width:7px;height:7px;border-radius:50%;background:var(--sauge);}
+    .proche-pill-name{font-size:12px;color:var(--ivoire);}
+    .nav-bar{background:var(--ivoire);border-top:0.5px solid var(--brun-border);padding:10px 0 8px;display:flex;justify-content:space-around;flex-shrink:0;}
+    .nav-item{display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;padding:0 8px;}
+    .nav-item i{font-size:22px;color:var(--brun-light);transition:color 0.2s;}
+    .nav-item.active i{color:var(--terra);}
+    .nav-label{font-size:10px;color:var(--brun-light);}
+    .nav-item.active .nav-label{color:var(--terra);}
+    .btn-full{width:100%;background:var(--terra);color:var(--ivoire);font-family:"DM Sans",sans-serif;font-size:13px;letter-spacing:1.5px;text-transform:uppercase;padding:14px;border-radius:50px;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;}
+    .btn-full:active{opacity:0.85;}
+    .btn-ghost{width:100%;background:transparent;color:var(--terra-mid);font-family:"DM Sans",sans-serif;font-size:13px;padding:10px;border-radius:50px;border:1px solid var(--brun-border);cursor:pointer;}
+    .sec-label{font-size:11px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:var(--terra-mid);padding:0.8rem 1.4rem 0.5rem;}
+    .divider{height:0.5px;background:var(--brun-border);margin:0 1.4rem;}
+    .filter-row{display:flex;gap:7px;padding:0.7rem 1.4rem;overflow-x:auto;}
+    .filter-chip{background:#fff;color:var(--brun-texte);font-size:12px;padding:5px 13px;border-radius:20px;border:0.5px solid var(--brun-border);white-space:nowrap;flex-shrink:0;cursor:pointer;}
+    .filter-chip.active{background:var(--brun);color:var(--ivoire);border-color:var(--brun);}
+    .progress-bar{height:3px;background:var(--brun-border);border-radius:2px;margin-bottom:1.4rem;}
+    .progress-fill{height:3px;background:var(--terra);border-radius:2px;}
+    .role-card{background:#fff;border:1px solid var(--brun-border);border-radius:14px;padding:12px 14px;margin-bottom:10px;display:flex;align-items:center;gap:12px;cursor:pointer;}
+    .role-card.selected{border:2px solid var(--terra);background:#FEF5EF;}
+    .role-icon{width:40px;height:40px;border-radius:50%;background:var(--brun-bg);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+    .role-icon i{font-size:18px;color:var(--terra);}
+    .role-title{font-size:14px;font-weight:500;color:var(--brun);margin-bottom:2px;}
+    .role-desc{font-size:12px;color:var(--brun-texte);}
+    .radio-dot{width:18px;height:18px;border-radius:50%;border:1.5px solid var(--brun-border);margin-left:auto;flex-shrink:0;display:flex;align-items:center;justify-content:center;}
+    .radio-dot.on{border-color:var(--terra);}
+    .radio-dot.on::after{content:"";width:8px;height:8px;border-radius:50%;background:var(--terra);display:block;}
+    .field-label{font-size:12px;font-weight:500;color:var(--brun-texte);margin-bottom:6px;}
+    .field-input{width:100%;background:#fff;border:1px solid var(--brun-border);border-radius:10px;padding:12px 14px;font-family:"DM Sans",sans-serif;font-size:14px;color:var(--brun);margin-bottom:14px;outline:none;}
+    .field-input:focus{border-color:var(--terra);}
+    .photo-zone{border:1.5px dashed var(--brun-border);border-radius:14px;padding:1.5rem;display:flex;flex-direction:column;align-items:center;gap:7px;margin-bottom:14px;background:#fff;}
+    .photo-zone i{font-size:30px;color:var(--brun-light);}
+    .photo-zone span{font-size:12px;color:var(--terra-mid);}
+    .feat-row{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:0.5px solid #F0E8E0;}
+    .feat-row:last-child{border-bottom:none;}
+    .feat-icon{width:36px;height:36px;border-radius:10px;background:var(--brun-bg);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+    .feat-icon i{font-size:16px;color:var(--terra);}
+    .feat-title{font-size:13px;font-weight:500;color:var(--brun);}
+    .feat-desc{font-size:12px;color:var(--brun-texte);}
+    .check-circle{width:52px;height:52px;border-radius:50%;background:#EEF7F3;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;}
+    .check-circle i{font-size:24px;color:var(--sauge);}
+    .db-header{background:var(--brun);padding:1.1rem 1.4rem 1.3rem;flex-shrink:0;}
+    .db-greet{font-size:12px;color:var(--peche);font-weight:300;margin-bottom:2px;}
+    .db-date{font-family:"Cormorant Garamond",serif;font-weight:300;font-size:24px;color:var(--ivoire);margin-bottom:1rem;}
+    .proche-card-db{background:rgba(255,255,255,0.08);border-radius:14px;padding:10px 13px;display:flex;align-items:center;gap:11px;}
+    .proche-avatar{width:40px;height:40px;border-radius:50%;background:var(--terra);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:500;color:var(--ivoire);flex-shrink:0;}
+    .proche-name{font-size:14px;font-weight:500;color:var(--ivoire);margin-bottom:2px;}
+    .proche-path{font-size:12px;color:var(--peche);font-weight:300;}
+    .proche-badge{background:var(--sauge);color:var(--ivoire);font-size:10px;padding:3px 8px;border-radius:20px;margin-left:auto;flex-shrink:0;}
+    .alert-card{background:#FEF5EF;border:1px solid #F0D5BC;border-radius:12px;padding:10px 13px;display:flex;align-items:center;gap:10px;margin:0 1.4rem 8px;}
+    .alert-card.green{background:#EEF7F3;border-color:#B8DDD1;}
+    .alert-dot{width:8px;height:8px;border-radius:50%;background:var(--terra);flex-shrink:0;}
+    .alert-dot.green{background:var(--sauge);}
+    .alert-txt{font-size:13px;color:var(--brun);flex:1;}
+    .alert-time{font-size:11px;color:var(--terra-mid);flex-shrink:0;}
+    .rdv-card-db{background:#fff;border:0.5px solid var(--brun-border);border-radius:12px;padding:10px 13px;margin:0 1.4rem 8px;display:flex;align-items:center;gap:11px;cursor:pointer;}
+    .rdv-datebox{background:var(--brun-bg);border-radius:9px;padding:6px 9px;text-align:center;flex-shrink:0;min-width:42px;}
+    .rdv-day{font-size:18px;font-weight:500;color:var(--terra);line-height:1;}
+    .rdv-mon{font-size:10px;color:var(--terra-mid);text-transform:uppercase;letter-spacing:1px;}
+    .rdv-title{font-size:13px;font-weight:500;color:var(--brun);margin-bottom:2px;}
+    .rdv-detail{font-size:12px;color:var(--brun-texte);}
+    .rdv-hour{font-size:12px;color:var(--terra-mid);flex-shrink:0;margin-left:auto;}
+    .grid2{display:grid;grid-template-columns:1fr 1fr;gap:9px;padding:0 1.4rem;margin-bottom:0.6rem;}
+    .module-card{background:#fff;border:0.5px solid var(--brun-border);border-radius:14px;padding:13px;display:flex;flex-direction:column;gap:7px;cursor:pointer;}
+    .module-card:active{background:var(--brun-bg);}
+    .mod-icon{width:36px;height:36px;border-radius:10px;background:var(--brun-bg);display:flex;align-items:center;justify-content:center;}
+    .mod-icon i{font-size:17px;color:var(--terra);}
+    .mod-title{font-size:13px;font-weight:500;color:var(--brun);}
+    .mod-sub{font-size:11px;color:var(--brun-texte);}
+    .jacob-banner{margin:0 1.4rem 0.8rem;background:var(--brun);border-radius:13px;padding:11px 13px;display:flex;align-items:center;gap:11px;cursor:pointer;}
+    .jacob-mini-av{width:34px;height:34px;border-radius:50%;background:var(--terra);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+    .jacob-mini-av i{font-size:16px;color:var(--ivoire);}
+    .jacob-banner-title{font-size:13px;font-weight:500;color:var(--ivoire);margin-bottom:2px;}
+    .jacob-banner-sub{font-size:11px;color:var(--peche);}
+    .jacob-banner-btn{background:var(--terra);color:var(--ivoire);font-size:11px;padding:5px 11px;border-radius:20px;border:none;font-family:"DM Sans",sans-serif;cursor:pointer;flex-shrink:0;}
+    .cal-nav{display:flex;align-items:center;justify-content:space-between;padding:0.9rem 1.4rem 0.5rem;}
+    .cal-month{font-family:"Cormorant Garamond",serif;font-size:20px;color:var(--brun);}
+    .cal-arrows{display:flex;gap:8px;}
+    .cal-arr{width:30px;height:30px;border-radius:50%;background:#fff;border:0.5px solid var(--brun-border);display:flex;align-items:center;justify-content:center;cursor:pointer;}
+    .cal-arr i{font-size:15px;color:var(--brun-texte);}
+    .cal-grid{padding:0 1.4rem 0.8rem;}
+    .cal-days-hdr{display:grid;grid-template-columns:repeat(7,1fr);margin-bottom:4px;}
+    .cal-dn{font-size:11px;color:var(--terra-mid);text-align:center;padding:4px 0;font-weight:500;}
+    .cal-days{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;}
+    .cal-day{height:36px;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:9px;cursor:pointer;position:relative;}
+    .cal-day span{font-size:13px;color:var(--brun);}
+    .cal-day.other span{color:var(--brun-light);}
+    .cal-day.today{background:var(--terra);}
+    .cal-day.today span{color:var(--ivoire);font-weight:500;}
+    .cal-day.has-rdv::after{content:"";width:4px;height:4px;border-radius:50%;background:var(--terra);position:absolute;bottom:4px;}
+    .cal-day.today.has-rdv::after{background:var(--ivoire);}
+    .rdv-item{margin:0 1.4rem 10px;background:#fff;border:0.5px solid var(--brun-border);border-radius:14px;padding:12px;display:flex;gap:11px;align-items:flex-start;cursor:pointer;}
+    .rdv-item.urgent{border-left:3px solid var(--terra);border-radius:0 14px 14px 0;margin-left:1.4rem;}
+    .rdv-body{flex:1;}
+    .rdv-t{font-size:13px;font-weight:500;color:var(--brun);margin-bottom:2px;}
+    .rdv-doc{font-size:12px;color:var(--brun-texte);margin-bottom:2px;}
+    .rdv-tag{font-size:10px;padding:2px 8px;border-radius:20px;display:inline-block;margin-top:3px;}
+    .tag-neuro{background:#EEF7F3;color:#3B7A62;}
+    .tag-kine{background:var(--brun-bg);color:#8B5E3C;}
+    .tag-gen{background:#F0EAF7;color:#6B4C99;}
+    .rdv-h{font-size:12px;color:var(--terra-mid);flex-shrink:0;}
+    .detail-section{background:#fff;border:0.5px solid var(--brun-border);border-radius:14px;overflow:hidden;margin:0 1.4rem 12px;}
+    .detail-top{background:var(--terra);padding:1rem 1.2rem;display:flex;align-items:center;gap:12px;}
+    .detail-top-av{width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;}
+    .detail-top-av i{font-size:20px;color:var(--ivoire);}
+    .detail-top-name{font-size:15px;font-weight:500;color:var(--ivoire);}
+    .detail-top-doc{font-size:12px;color:var(--ivoire);opacity:0.85;}
+    .detail-top-badge{margin-left:auto;background:rgba(255,255,255,0.2);color:var(--ivoire);font-size:11px;padding:3px 8px;border-radius:20px;}
+    .detail-body{padding:1rem 1.2rem;}
+    .detail-row{display:flex;align-items:center;gap:9px;margin-bottom:10px;}
+    .detail-row:last-child{margin-bottom:0;}
+    .detail-row i{font-size:16px;color:var(--terra);flex-shrink:0;}
+    .detail-row span{font-size:13px;color:var(--brun);}
+    .docs-checklist{background:#fff;border:0.5px solid var(--brun-border);border-radius:14px;padding:1rem 1.2rem;margin:0 1.4rem 12px;}
+    .check-row{display:flex;align-items:center;gap:9px;padding:7px 0;border-bottom:0.5px solid #F0E8E0;}
+    .check-row:last-child{border-bottom:none;}
+    .check-row i{font-size:15px;color:var(--sauge);}
+    .check-row i.warn{color:var(--terra);}
+    .check-row i.grey{color:var(--brun-light);}
+    .check-row span{font-size:13px;color:var(--brun);flex:1;}
+    .check-row span.grey{color:var(--terra-mid);}
+    .notes-block{background:#fff;border:0.5px solid var(--brun-border);border-radius:14px;padding:1rem 1.2rem;margin:0 1.4rem 12px;}
+    .notes-label{font-size:11px;font-weight:500;letter-spacing:1.5px;text-transform:uppercase;color:var(--terra-mid);margin-bottom:7px;}
+    .notes-text{font-size:13px;color:var(--brun-texte);line-height:1.6;}
+    .cat-header{display:flex;align-items:center;gap:8px;margin:0 1.4rem 8px;}
+    .cat-line{flex:1;height:0.5px;background:var(--brun-border);}
+    .cat-lbl{font-size:11px;color:var(--terra-mid);font-weight:500;letter-spacing:1px;text-transform:uppercase;white-space:nowrap;}
+    .interv-card{background:#fff;border:0.5px solid var(--brun-border);border-radius:14px;padding:11px 13px;margin:0 1.4rem 8px;display:flex;align-items:center;gap:11px;cursor:pointer;}
+    .interv-card:active{background:var(--brun-bg);}
+    .av{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:500;flex-shrink:0;}
+    .av-fam{background:var(--brun-bg);color:var(--terra);}
+    .av-med{background:#EEF7F3;color:#3B7A62;}
+    .av-kine{background:#F0EAF7;color:#6B4C99;}
+    .av-inf{background:#FEF5EF;color:var(--terra);}
+    .av-aide{background:#FFF3E0;color:#E65100;}
+    .int-info{flex:1;}
+    .int-name{font-size:13px;font-weight:500;color:var(--brun);margin-bottom:2px;}
+    .int-role{font-size:12px;color:var(--brun-texte);}
+    .badge{font-size:10px;padding:2px 7px;border-radius:20px;display:inline-block;margin-top:3px;}
+    .badge-active{background:#EEF7F3;color:#3B7A62;}
+    .badge-invite{background:#FEF5EF;color:var(--terra);}
+    .int-actions{display:flex;gap:7px;}
+    .int-btn{width:32px;height:32px;border-radius:50%;background:var(--brun-bg);border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;}
+    .int-btn i{font-size:15px;color:var(--terra);}
+    .int-btn.msg{background:#EEF7F3;}
+    .int-btn.msg i{color:#3B7A62;}
+    .profile-header{background:var(--brun);padding:1rem 1.4rem 1.2rem;display:flex;align-items:center;gap:12px;}
+    .profile-av{width:50px;height:50px;border-radius:50%;background:var(--terra);display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:500;color:var(--ivoire);flex-shrink:0;}
+    .profile-name{font-family:"Cormorant Garamond",serif;font-weight:300;font-size:24px;color:var(--ivoire);}
+    .profile-role{font-size:12px;color:var(--peche);}
+    .info-block{background:#fff;border:0.5px solid var(--brun-border);border-radius:14px;padding:0.8rem 1.2rem;margin:1rem 1.4rem 0.8rem;}
+    .info-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:0.5px solid #F0E8E0;}
+    .info-row:last-child{border-bottom:none;padding-bottom:0;}
+    .info-row i{font-size:16px;color:var(--terra);flex-shrink:0;width:20px;}
+    .info-txt{font-size:13px;color:var(--brun);}
+    .info-sub{font-size:12px;color:var(--brun-texte);}
+    .access-block{background:#fff;border:0.5px solid var(--brun-border);border-radius:14px;padding:1rem 1.2rem;margin:0 1.4rem 0.8rem;}
+    .access-title{font-size:11px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:var(--terra-mid);margin-bottom:10px;}
+    .access-row{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:0.5px solid #F0E8E0;}
+    .access-row:last-child{border-bottom:none;padding-bottom:0;}
+    .access-label{font-size:13px;color:var(--brun);}
+    .toggle{width:38px;height:22px;border-radius:11px;background:var(--sauge);position:relative;flex-shrink:0;cursor:pointer;}
+    .toggle::after{content:"";width:18px;height:18px;border-radius:50%;background:#fff;position:absolute;top:2px;right:2px;transition:right 0.2s;}
+    .toggle.off{background:var(--brun-border);}
+    .toggle.off::after{right:auto;left:2px;}
+    .action-row{display:flex;gap:9px;padding:0 1.4rem;margin-bottom:1rem;}
+    .action-btn{flex:1;padding:12px;border-radius:50px;border:none;font-family:"DM Sans",sans-serif;font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px;}
+    .action-btn.call{background:#EEF7F3;color:#3B7A62;}
+    .action-btn.msg{background:var(--brun-bg);color:var(--terra);}
+    .action-btn.del{background:#FCF0F0;color:#C0392B;}
+    .search-bar{margin:0.7rem 1.4rem 0.2rem;background:#fff;border:0.5px solid var(--brun-border);border-radius:50px;padding:10px 15px;display:flex;align-items:center;gap:9px;}
+    .search-bar i{font-size:16px;color:var(--terra-mid);}
+    .search-bar span{font-size:13px;color:var(--brun-light);}
+    .doc-card{margin:0 1.4rem 8px;background:#fff;border:0.5px solid var(--brun-border);border-radius:14px;padding:11px 13px;display:flex;align-items:center;gap:11px;cursor:pointer;}
+    .doc-card:active{background:var(--brun-bg);}
+    .doc-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+    .doc-icon i{font-size:18px;}
+    .ic-blue{background:#E8F4FD;}.ic-blue i{color:#1565C0;}
+    .ic-green{background:#EEF7F3;}.ic-green i{color:#3B7A62;}
+    .ic-terra{background:var(--brun-bg);}.ic-terra i{color:var(--terra);}
+    .ic-purple{background:#F0EAF7;}.ic-purple i{color:#6B4C99;}
+    .doc-name{font-size:13px;font-weight:500;color:var(--brun);margin-bottom:2px;}
+    .doc-meta{font-size:11px;color:var(--brun-texte);}
+    .doc-bdg{font-size:10px;padding:2px 7px;border-radius:20px;display:inline-block;margin-top:3px;}
+    .bdg-ok{background:#EEF7F3;color:#3B7A62;}
+    .bdg-exp{background:#FCF0F0;color:#C0392B;}
+    .bdg-new{background:var(--brun-bg);color:var(--terra);}
+    .coffre-banner{margin:0 1.4rem 8px;background:var(--brun);border-radius:14px;padding:12px 14px;display:flex;align-items:center;gap:12px;cursor:pointer;}
+    .coffre-icon{width:40px;height:40px;border-radius:10px;background:rgba(196,128,90,0.25);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+    .coffre-icon i{font-size:18px;color:var(--peche);}
+    .coffre-title{font-size:13px;font-weight:500;color:var(--ivoire);margin-bottom:2px;}
+    .coffre-sub{font-size:11px;color:var(--peche);}
+    .coffre-btn{background:var(--terra);color:var(--ivoire);font-size:11px;padding:6px 12px;border-radius:20px;border:none;font-family:"DM Sans",sans-serif;cursor:pointer;flex-shrink:0;margin-left:auto;}
+    .doc-preview{margin:1rem 1.4rem;background:#fff;border:0.5px solid var(--brun-border);border-radius:14px;overflow:hidden;}
+    .preview-top{background:var(--brun-bg);padding:1.5rem;display:flex;flex-direction:column;align-items:center;gap:8px;}
+    .preview-top i{font-size:38px;color:var(--terra);}
+    .preview-top-name{font-size:13px;font-weight:500;color:var(--brun);}
+    .preview-top-info{font-size:11px;color:var(--brun-texte);}
+    .preview-details{padding:0.9rem 1.2rem;}
+    .preview-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:0.5px solid #F0E8E0;align-items:center;}
+    .preview-row:last-child{border-bottom:none;}
+    .preview-key{font-size:12px;color:var(--brun-texte);}
+    .preview-val{font-size:12px;color:var(--brun);font-weight:500;text-align:right;}
+    .preview-val.exp{color:#C0392B;}
+    .doc-actions{display:flex;gap:9px;padding:0 1.4rem;margin-bottom:1rem;}
+    .doc-act-btn{flex:1;padding:12px;border-radius:50px;border:0.5px solid var(--brun-border);background:#fff;font-family:"DM Sans",sans-serif;font-size:12px;color:var(--brun);display:flex;align-items:center;justify-content:center;gap:5px;cursor:pointer;}
+    .doc-act-btn.primary{background:var(--terra);color:var(--ivoire);border-color:var(--terra);}
+    .passage-card{margin:0 1.4rem 10px;background:#fff;border:0.5px solid var(--brun-border);border-radius:14px;overflow:hidden;}
+    .passage-top{padding:10px 13px;display:flex;align-items:center;gap:10px;border-bottom:0.5px solid #F0E8E0;}
+    .p-av{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500;flex-shrink:0;}
+    .passage-name{font-size:13px;font-weight:500;color:var(--brun);margin-bottom:1px;}
+    .passage-role{font-size:11px;color:var(--brun-texte);}
+    .passage-time{font-size:12px;color:var(--terra-mid);margin-left:auto;flex-shrink:0;}
+    .passage-body{padding:10px 13px;}
+    .passage-note{font-size:13px;color:var(--brun);line-height:1.6;margin-bottom:8px;}
+    .passage-tags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px;}
+    .ptag{font-size:10px;padding:3px 9px;border-radius:20px;}
+    .ptag-ok{background:#EEF7F3;color:#3B7A62;}
+    .ptag-warn{background:#FEF5EF;color:var(--terra);}
+    .ptag-info{background:#F0EAF7;color:#6B4C99;}
+    .passage-footer{padding:6px 13px 10px;display:flex;align-items:center;}
+    .p-duration{font-size:11px;color:var(--terra-mid);display:flex;align-items:center;gap:3px;}
+    .p-status{margin-left:auto;font-size:10px;padding:3px 8px;border-radius:20px;}
+    .s-done{background:#EEF7F3;color:#3B7A62;}
+    .day-sep{font-size:12px;font-weight:500;color:var(--brun);padding:0.5rem 1.4rem 0.3rem;display:flex;align-items:center;gap:8px;}
+    .day-sep-line{flex:1;height:0.5px;background:var(--brun-border);}
+    .form-section{font-size:11px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:var(--terra-mid);margin-bottom:8px;}
+    .field-block{background:#fff;border:0.5px solid var(--brun-border);border-radius:14px;overflow:hidden;margin-bottom:12px;}
+    .field-row{padding:11px 14px;border-bottom:0.5px solid #F0E8E0;display:flex;align-items:center;gap:10px;}
+    .field-row:last-child{border-bottom:none;}
+    .field-row i{font-size:16px;color:var(--terra);flex-shrink:0;}
+    .field-row-label{font-size:13px;color:var(--brun);flex:1;}
+    .field-row-val{font-size:13px;color:var(--terra-mid);}
+    .field-row-val.filled{color:var(--terra);}
+    .mood-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;margin-bottom:12px;}
+    .mood-btn{background:#fff;border:0.5px solid var(--brun-border);border-radius:11px;padding:9px 7px;display:flex;flex-direction:column;align-items:center;gap:5px;cursor:pointer;}
+    .mood-btn.selected{border-color:var(--terra);background:#FEF5EF;}
+    .mood-emoji{font-size:22px;}
+    .mood-text{font-size:11px;color:var(--brun-texte);}
+    .mood-btn.selected .mood-text{color:var(--terra);}
+    .textarea-block{background:#fff;border:0.5px solid var(--brun-border);border-radius:14px;padding:12px 14px;margin-bottom:12px;}
+    .textarea-lbl{font-size:12px;color:var(--brun-texte);margin-bottom:6px;}
+    .fake-text{font-size:13px;color:var(--brun);line-height:1.6;}
+  </style>
+</head>
+<body>
+<div class="phone-shell">
+
+<!-- SPLASH -->
+<div class="screen active" id="screen-splash">
+<div class="status-bar"><span class="status-time">9:41</span><div class="status-icons"><i class="ti ti-wifi"></i><i class="ti ti-battery"></i></div></div>
+<div style="padding:2.5rem 1.6rem 2rem;display:flex;flex-direction:column;align-items:center;flex:1;background:var(--ivoire)">
+<div style="margin-top:1rem"><svg width="64" height="64" viewBox="0 0 56 56" fill="none"><circle cx="28" cy="28" r="26.5" stroke="#C4805A" stroke-width="1"/><g transform="translate(28,30) scale(0.88)"><line x1="0" y1="14" x2="0" y2="-18" stroke="#3D2B1F" stroke-width="1.2" stroke-linecap="round"/><line x1="0" y1="6" x2="-13" y2="-2" stroke="#3D2B1F" stroke-width="1" stroke-linecap="round"/><line x1="0" y1="6" x2="13" y2="-2" stroke="#3D2B1F" stroke-width="1" stroke-linecap="round"/><line x1="0" y1="-1" x2="-10" y2="-8" stroke="#3D2B1F" stroke-width="0.9" stroke-linecap="round"/><line x1="0" y1="-1" x2="10" y2="-8" stroke="#3D2B1F" stroke-width="0.9" stroke-linecap="round"/><line x1="0" y1="-8" x2="-7" y2="-14" stroke="#3D2B1F" stroke-width="0.8" stroke-linecap="round"/><line x1="0" y1="-8" x2="7" y2="-14" stroke="#3D2B1F" stroke-width="0.8" stroke-linecap="round"/><line x1="0" y1="-14" x2="-4" y2="-18" stroke="#3D2B1F" stroke-width="0.7" stroke-linecap="round"/><line x1="0" y1="-14" x2="4" y2="-18" stroke="#3D2B1F" stroke-width="0.7" stroke-linecap="round"/><line x1="-13" y1="-2" x2="-18" y2="-5" stroke="#C4805A" stroke-width="0.7" stroke-linecap="round"/><line x1="-13" y1="-2" x2="-16" y2="1" stroke="#C4805A" stroke-width="0.7" stroke-linecap="round"/><line x1="13" y1="-2" x2="18" y2="-5" stroke="#C4805A" stroke-width="0.7" stroke-linecap="round"/><line x1="13" y1="-2" x2="16" y2="1" stroke="#C4805A" stroke-width="0.7" stroke-linecap="round"/><line x1="-10" y1="-8" x2="-14" y2="-11" stroke="#C4805A" stroke-width="0.7" stroke-linecap="round"/><line x1="-10" y1="-8" x2="-13" y2="-5" stroke="#C4805A" stroke-width="0.7" stroke-linecap="round"/><line x1="10" y1="-8" x2="14" y2="-11" stroke="#C4805A" stroke-width="0.7" stroke-linecap="round"/><line x1="10" y1="-8" x2="13" y2="-5" stroke="#C4805A" stroke-width="0.7" stroke-linecap="round"/></g></svg></div>
+<p style="font-family:'Cormorant Garamond',serif;font-size:44px;letter-spacing:7px;color:var(--brun);text-align:center;margin:1rem 0 4px">sereno</p>
+<p style="font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--terra-mid);text-align:center;margin-bottom:2.5rem">prendre soin, en toute sérénité</p>
+<p style="font-family:'Cormorant Garamond',serif;font-size:24px;color:var(--brun);text-align:center;line-height:1.35;margin-bottom:8px">Votre espace de soin partagé</p>
+<p style="font-size:13px;color:var(--brun-texte);text-align:center;line-height:1.65;margin-bottom:2rem">Centralisez, coordonnez et partagez le suivi de vos proches — en toute simplicité.</p>
+<div style="width:100%;margin-top:auto;display:flex;flex-direction:column;gap:10px">
+<button class="btn-full" onclick="go('screen-profil')">Commencer</button>
+<button class="btn-ghost" onclick="go('screen-dashboard')">J&apos;ai déjà un compte</button>
+</div></div></div>
+
+<!-- PROFIL -->
+<div class="screen" id="screen-profil">
+<div class="status-bar"><span class="status-time">9:41</span><div class="status-icons"><i class="ti ti-wifi"></i><i class="ti ti-battery"></i></div></div>
+<div style="padding:1.4rem;flex:1;overflow-y:auto">
+<p style="font-size:11px;color:var(--terra-mid);font-weight:500;letter-spacing:1px;text-transform:uppercase;margin-bottom:5px">Étape 1 sur 3</p>
+<p style="font-family:'Cormorant Garamond',serif;font-size:26px;color:var(--brun);margin-bottom:4px">Qui êtes-vous ?</p>
+<p style="font-size:13px;color:var(--brun-texte);margin-bottom:1rem">Votre interface s&apos;adapte à votre rôle.</p>
+<div class="progress-bar"><div class="progress-fill" style="width:33%"></div></div>
+<div class="role-card selected" onclick="selectRole(this)"><div class="role-icon"><i class="ti ti-heart"></i></div><div><p class="role-title">Aidant familial</p><p class="role-desc">Conjoint, enfant, proche aidant</p></div><div class="radio-dot on"></div></div>
+<div class="role-card" onclick="selectRole(this)"><div class="role-icon"><i class="ti ti-stethoscope"></i></div><div><p class="role-title">Professionnel de santé</p><p class="role-desc">Médecin, infirmier, kiné</p></div><div class="radio-dot"></div></div>
+<div class="role-card" onclick="selectRole(this)"><div class="role-icon"><i class="ti ti-home"></i></div><div><p class="role-title">Aide à domicile</p><p class="role-desc">Auxiliaire de vie, association</p></div><div class="radio-dot"></div></div>
+<div class="role-card" onclick="selectRole(this)"><div class="role-icon"><i class="ti ti-building"></i></div><div><p class="role-title">Structure / EHPAD</p><p class="role-desc">Établissement médico-social</p></div><div class="radio-dot"></div></div>
+<div style="margin-top:1.5rem"><button class="btn-full" onclick="go('screen-proche')">Continuer</button></div>
+</div></div>
+
+<!-- PROCHE -->
+<div class="screen" id="screen-proche">
+<div class="status-bar"><span class="status-time">9:41</span><div class="status-icons"><i class="ti ti-wifi"></i><i class="ti ti-battery"></i></div></div>
+<div style="padding:1.4rem;flex:1;overflow-y:auto">
+<p style="font-size:11px;color:var(--terra-mid);font-weight:500;letter-spacing:1px;text-transform:uppercase;margin-bottom:5px">Étape 2 sur 3</p>
+<p style="font-family:'Cormorant Garamond',serif;font-size:26px;color:var(--brun);margin-bottom:4px">Votre proche</p>
+<p style="font-size:13px;color:var(--brun-texte);margin-bottom:1rem">Ces informations resteront privées.</p>
+<div class="progress-bar"><div class="progress-fill" style="width:66%"></div></div>
+<div class="photo-zone"><i class="ti ti-camera"></i><span>Ajouter une photo</span></div>
+<p class="field-label">Prénom</p><input class="field-input" type="text" value="Laura">
+<p class="field-label">Date de naissance</p><input class="field-input" type="text" value="12/04/1952">
+<p class="field-label">Pathologie principale</p><input class="field-input" type="text" value="Maladie de Parkinson">
+<button class="btn-full" onclick="go('screen-bienvenue')" style="margin-top:0.5rem">Continuer</button>
+</div></div>
+
+<!-- BIENVENUE -->
+<div class="screen" id="screen-bienvenue">
+<div class="status-bar"><span class="status-time">9:41</span><div class="status-icons"><i class="ti ti-wifi"></i><i class="ti ti-battery"></i></div></div>
+<div style="padding:1.4rem;flex:1;overflow-y:auto">
+<div class="progress-bar"><div class="progress-fill" style="width:100%;background:#6B9E8A"></div></div>
+<div class="check-circle"><i class="ti ti-check"></i></div>
+<p style="font-family:'Cormorant Garamond',serif;font-size:26px;color:var(--brun);text-align:center;margin-bottom:8px">Bienvenue sur Sereno</p>
+<p style="font-size:13px;color:var(--brun-texte);text-align:center;line-height:1.6;margin-bottom:1.5rem">Votre espace pour Laura est prêt.</p>
+<div style="background:#fff;border:0.5px solid var(--brun-border);border-radius:14px;padding:0.5rem 1.2rem;margin-bottom:1.5rem">
+<div class="feat-row"><div class="feat-icon"><i class="ti ti-calendar"></i></div><div><p class="feat-title">Agenda médical</p><p class="feat-desc">Ajoutez vos premiers rendez-vous</p></div></div>
+<div class="feat-row"><div class="feat-icon"><i class="ti ti-file-text"></i></div><div><p class="feat-title">Documents</p><p class="feat-desc">Carte vitale, ordonnances</p></div></div>
+<div class="feat-row"><div class="feat-icon"><i class="ti ti-users"></i></div><div><p class="feat-title">Cercle de soin</p><p class="feat-desc">Invitez vos intervenants</p></div></div>
+<div class="feat-row"><div class="feat-icon"><i class="ti ti-message-circle"></i></div><div><p class="feat-title">Agent Jacob</p><p class="feat-desc">IA de stimulation et d&apos;accompagnement</p></div></div>
+</div>
+<button class="btn-full" onclick="go('screen-dashboard')">Accéder à mon espace →</button>
+</div></div>
+
+<!-- DASHBOARD -->
+<div class="screen" id="screen-dashboard">
+<div class="status-bar dark"><span class="status-time">9:41</span><div class="status-icons"><i class="ti ti-wifi"></i><i class="ti ti-battery"></i></div></div>
+<div class="db-header">
+<p class="db-greet">Bonjour Karim</p>
+<p class="db-date">Lundi 22 juin 2026</p>
+<div class="proche-card-db"><div class="proche-avatar">L</div><div><p class="proche-name">Laura</p><p class="proche-path">Maladie de Parkinson</p></div><span class="proche-badge">Suivi actif</span></div>
+</div>
+<div style="flex:1;overflow-y:auto">
+<p class="sec-label">Alertes du jour</p>
+<div class="alert-card"><div class="alert-dot"></div><span class="alert-txt">Médicament du soir non confirmé</span><span class="alert-time">20h00</span></div>
+<div class="alert-card green"><div class="alert-dot green"></div><span class="alert-txt">Passage infirmière confirmé</span><span class="alert-time">8h30</span></div>
+<p class="sec-label">Prochains rendez-vous</p>
+<div class="rdv-card-db" onclick="go('screen-rdv-detail')"><div class="rdv-datebox"><div class="rdv-day">22</div><div class="rdv-mon">juin</div></div><div><p class="rdv-title">Neurologue — Dr. Benali</p><p class="rdv-detail">CHU Lariboisière</p></div><span class="rdv-hour">14h30</span></div>
+<div class="rdv-card-db"><div class="rdv-datebox"><div class="rdv-day">24</div><div class="rdv-mon">juin</div></div><div><p class="rdv-title">Kinésithérapeute</p><p class="rdv-detail">Cabinet Durieux</p></div><span class="rdv-hour">10h00</span></div>
+<p class="sec-label">Modules</p>
+<div class="grid2">
+<div class="module-card" onclick="go('screen-documents')"><div class="mod-icon"><i class="ti ti-file-text"></i></div><p class="mod-title">Documents</p><p class="mod-sub">12 fichiers</p></div>
+<div class="module-card" onclick="go('screen-cercle')"><div class="mod-icon"><i class="ti ti-users"></i></div><p class="mod-title">Cercle de soin</p><p class="mod-sub">5 intervenants</p></div>
+<div class="module-card" onclick="go('screen-agenda')"><div class="mod-icon"><i class="ti ti-pill"></i></div><p class="mod-title">Ordonnances</p><p class="mod-sub">3 en cours</p></div>
+<div class="module-card" onclick="go('screen-carnet')"><div class="mod-icon"><i class="ti ti-notebook"></i></div><p class="mod-title">Carnet liaison</p><p class="mod-sub">2 nouveaux</p></div>
+</div>
+<div class="jacob-banner" onclick="go('screen-jacob-soon')">
+<div class="jacob-mini-av"><i class="ti ti-message-circle"></i></div>
+<div style="flex:1"><p class="jacob-banner-title">Jacob — Agent Sereno</p><p class="jacob-banner-sub">Laura n&apos;a pas eu sa conversation du jour</p></div>
+<button class="jacob-banner-btn">Lancer</button>
+</div>
+</div>
+<div class="nav-bar">
+<div class="nav-item active" onclick="go('screen-dashboard')"><i class="ti ti-home"></i><span class="nav-label">Accueil</span></div>
+<div class="nav-item " onclick="go('screen-agenda')"><i class="ti ti-calendar"></i><span class="nav-label">Agenda</span></div>
+<div class="nav-item " onclick="go('screen-documents')"><i class="ti ti-file"></i><span class="nav-label">Documents</span></div>
+<div class="nav-item " onclick="go('screen-cercle')"><i class="ti ti-users"></i><span class="nav-label">Cercle</span></div>
+<div class="nav-item " onclick="go('screen-jacob-soon')"><i class="ti ti-message-circle"></i><span class="nav-label">Agent IA</span></div>
+</div></div>
+
+<!-- AGENDA -->
+<div class="screen" id="screen-agenda">
+<div class="status-bar dark"><span class="status-time">9:41</span><div class="status-icons"><i class="ti ti-wifi"></i><i class="ti ti-battery"></i></div></div>
+<div class="page-header"><p class="page-title">Agenda médical</p><div style="display:flex;gap:8px"><div class="proche-pill"><div class="proche-dot"></div><span class="proche-pill-name">Laura</span></div><div class="h-icon"><i class="ti ti-bell"></i></div></div></div>
+<div style="flex:1;overflow-y:auto">
+<div class="cal-nav"><p class="cal-month">Juin 2026</p><div class="cal-arrows"><div class="cal-arr"><i class="ti ti-chevron-left"></i></div><div class="cal-arr"><i class="ti ti-chevron-right"></i></div></div></div>
+<div class="cal-grid">
+<div class="cal-days-hdr"><div class="cal-dn">L</div><div class="cal-dn">M</div><div class="cal-dn">M</div><div class="cal-dn">J</div><div class="cal-dn">V</div><div class="cal-dn">S</div><div class="cal-dn">D</div></div>
+<div class="cal-days">
+<div class="cal-day other"><span>1</span></div><div class="cal-day other"><span>2</span></div><div class="cal-day other"><span>3</span></div><div class="cal-day other has-rdv"><span>4</span></div><div class="cal-day other"><span>5</span></div><div class="cal-day other"><span>6</span></div><div class="cal-day other"><span>7</span></div>
+<div class="cal-day"><span>8</span></div><div class="cal-day has-rdv"><span>9</span></div><div class="cal-day"><span>10</span></div><div class="cal-day"><span>11</span></div><div class="cal-day has-rdv"><span>12</span></div><div class="cal-day"><span>13</span></div><div class="cal-day"><span>14</span></div>
+<div class="cal-day"><span>15</span></div><div class="cal-day"><span>16</span></div><div class="cal-day has-rdv"><span>17</span></div><div class="cal-day"><span>18</span></div><div class="cal-day"><span>19</span></div><div class="cal-day"><span>20</span></div><div class="cal-day"><span>21</span></div>
+<div class="cal-day today has-rdv"><span>22</span></div><div class="cal-day"><span>23</span></div><div class="cal-day has-rdv"><span>24</span></div><div class="cal-day"><span>25</span></div><div class="cal-day"><span>26</span></div><div class="cal-day"><span>27</span></div><div class="cal-day"><span>28</span></div>
+<div class="cal-day"><span>29</span></div><div class="cal-day has-rdv"><span>30</span></div>
+</div></div>
+<div class="divider"></div>
+<p class="sec-label">À venir</p>
+<div class="rdv-item urgent" onclick="go('screen-rdv-detail')"><div class="rdv-datebox"><div class="rdv-day">22</div><div class="rdv-mon">juin</div></div><div class="rdv-body"><p class="rdv-t">Neurologue</p><p class="rdv-doc">Dr. Benali — CHU Lariboisière</p><span class="rdv-tag tag-neuro">Neurologie</span></div><span class="rdv-h">14h30</span></div>
+<div class="rdv-item"><div class="rdv-datebox"><div class="rdv-day">24</div><div class="rdv-mon">juin</div></div><div class="rdv-body"><p class="rdv-t">Kinésithérapeute</p><p class="rdv-doc">Cabinet Durieux</p><span class="rdv-tag tag-kine">Rééducation</span></div><span class="rdv-h">10h00</span></div>
+<div class="rdv-item"><div class="rdv-datebox"><div class="rdv-day">30</div><div class="rdv-mon">juin</div></div><div class="rdv-body"><p class="rdv-t">Médecin généraliste</p><p class="rdv-doc">Dr. Morel</p><span class="rdv-tag tag-gen">Généraliste</span></div><span class="rdv-h">9h00</span></div>
+<div style="padding:0 1.4rem 1rem"><button class="btn-full"><i class="ti ti-plus"></i> Ajouter un rendez-vous</button></div>
+</div>
+<div class="nav-bar">
+<div class="nav-item " onclick="go('screen-dashboard')"><i class="ti ti-home"></i><span class="nav-label">Accueil</span></div>
+<div class="nav-item active" onclick="go('screen-agenda')"><i class="ti ti-calendar"></i><span class="nav-label">Agenda</span></div>
+<div class="nav-item " onclick="go('screen-documents')"><i class="ti ti-file"></i><span class="nav-label">Documents</span></div>
+<div class="nav-item " onclick="go('screen-cercle')"><i class="ti ti-users"></i><span class="nav-label">Cercle</span></div>
+<div class="nav-item " onclick="go('screen-jacob-soon')"><i class="ti ti-message-circle"></i><span class="nav-label">Agent IA</span></div>
+</div></div>
+
+<!-- RDV DETAIL -->
+<div class="screen" id="screen-rdv-detail">
+<div class="status-bar dark"><span class="status-time">9:41</span><div class="status-icons"><i class="ti ti-wifi"></i><i class="ti ti-battery"></i></div></div>
+<div class="page-header"><div style="display:flex;align-items:center;gap:10px"><div class="h-icon" onclick="go('screen-agenda')"><i class="ti ti-arrow-left"></i></div><p class="page-title" style="font-size:22px">Détail RDV</p></div><div class="h-icon"><i class="ti ti-edit"></i></div></div>
+<div style="flex:1;overflow-y:auto;padding-top:1rem">
+<div class="detail-section">
+<div class="detail-top"><div class="detail-top-av"><i class="ti ti-stethoscope"></i></div><div><p class="detail-top-name">Neurologue</p><p class="detail-top-doc">Dr. Benali</p></div><span class="detail-top-badge">Aujourd&apos;hui</span></div>
+<div class="detail-body">
+<div class="detail-row"><i class="ti ti-calendar"></i><span>Lundi 22 juin 2026</span></div>
+<div class="detail-row"><i class="ti ti-clock"></i><span>14h30 — durée estimée 45 min</span></div>
+<div class="detail-row"><i class="ti ti-map-pin"></i><span>CHU Lariboisière — Paris 10e</span></div>
+<div class="detail-row"><i class="ti ti-user"></i><span>Laura accompagnée par Karim</span></div>
+</div></div>
+<p style="font-size:11px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:var(--terra-mid);padding:0 1.4rem 0.6rem">Documents à apporter</p>
+<div class="docs-checklist">
+<div class="check-row"><i class="ti ti-file-text"></i><span>Ordonnance en cours</span><i class="ti ti-check" style="margin-left:auto;color:var(--sauge)"></i></div>
+<div class="check-row"><i class="ti ti-id-badge"></i><span>Carte vitale</span><i class="ti ti-check" style="margin-left:auto;color:var(--sauge)"></i></div>
+<div class="check-row"><i class="ti ti-report-medical grey"></i><span class="grey">Dernier compte-rendu</span><i class="ti ti-alert-circle warn" style="margin-left:auto"></i></div>
+</div>
+<p style="font-size:11px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:var(--terra-mid);padding:0 1.4rem 0.6rem">Notes pour le médecin</p>
+<div class="notes-block"><p class="notes-text">"Tremblements matinaux plus fréquents depuis 3 semaines. Difficultés à boutonner ses vêtements."</p></div>
+<div style="padding:0 1.4rem 1rem"><button class="btn-full"><i class="ti ti-map-pin"></i> Voir l&apos;itinéraire</button></div>
+</div>
+<div class="nav-bar">
+<div class="nav-item " onclick="go('screen-dashboard')"><i class="ti ti-home"></i><span class="nav-label">Accueil</span></div>
+<div class="nav-item active" onclick="go('screen-agenda')"><i class="ti ti-calendar"></i><span class="nav-label">Agenda</span></div>
+<div class="nav-item " onclick="go('screen-documents')"><i class="ti ti-file"></i><span class="nav-label">Documents</span></div>
+<div class="nav-item " onclick="go('screen-cercle')"><i class="ti ti-users"></i><span class="nav-label">Cercle</span></div>
+<div class="nav-item " onclick="go('screen-jacob-soon')"><i class="ti ti-message-circle"></i><span class="nav-label">Agent IA</span></div>
+</div></div>
+
+<!-- CERCLE -->
+<div class="screen" id="screen-cercle">
+<div class="status-bar dark"><span class="status-time">9:41</span><div class="status-icons"><i class="ti ti-wifi"></i><i class="ti ti-battery"></i></div></div>
+<div class="page-header"><p class="page-title">Cercle de soin</p><div style="display:flex;gap:8px"><div class="proche-pill"><div class="proche-dot"></div><span class="proche-pill-name">Laura</span></div><div class="h-icon"><i class="ti ti-plus"></i></div></div></div>
+<div style="flex:1;overflow-y:auto">
+<div class="filter-row"><div class="filter-chip active">Tous (6)</div><div class="filter-chip">Famille</div><div class="filter-chip">Médical</div><div class="filter-chip">Aide</div></div>
+<div class="cat-header"><span class="cat-lbl">Famille</span><div class="cat-line"></div></div>
+<div class="interv-card"><div class="av av-fam">KA</div><div class="int-info"><p class="int-name">Karim (vous)</p><p class="int-role">Fils — Aidant principal</p><span class="badge badge-active">Accès complet</span></div></div>
+<div class="interv-card" onclick="go('screen-interv-detail')"><div class="av av-fam">SA</div><div class="int-info"><p class="int-name">Sara</p><p class="int-role">Sœur — Aidante secondaire</p><span class="badge badge-active">Accès partagé</span></div><div class="int-actions"><div class="int-btn msg"><i class="ti ti-message-circle"></i></div></div></div>
+<div class="cat-header"><span class="cat-lbl">Médical</span><div class="cat-line"></div></div>
+<div class="interv-card" onclick="go('screen-interv-detail')"><div class="av av-med">DB</div><div class="int-info"><p class="int-name">Dr. Benali</p><p class="int-role">Neurologue</p><span class="badge badge-active">Accès médical</span></div><div class="int-actions"><div class="int-btn"><i class="ti ti-phone"></i></div></div></div>
+<div class="interv-card" onclick="go('screen-interv-detail')"><div class="av av-kine">DU</div><div class="int-info"><p class="int-name">Cabinet Durieux</p><p class="int-role">Kinésithérapeute</p><span class="badge badge-active">Accès médical</span></div></div>
+<div class="interv-card"><div class="av av-inf">IN</div><div class="int-info"><p class="int-name">Infirmière Nadia</p><p class="int-role">Infirmière à domicile</p><span class="badge badge-invite">Invitation envoyée</span></div></div>
+<div class="cat-header"><span class="cat-lbl">Aide à domicile</span><div class="cat-line"></div></div>
+<div class="interv-card" onclick="go('screen-interv-detail')"><div class="av av-aide">FA</div><div class="int-info"><p class="int-name">Fatima</p><p class="int-role">Auxiliaire de vie — Lun/Mer/Ven</p><span class="badge badge-active">Accès carnet</span></div><div class="int-actions"><div class="int-btn msg"><i class="ti ti-message-circle"></i></div></div></div>
+<div style="padding:0.5rem 1.4rem 1rem"><button class="btn-full"><i class="ti ti-user-plus"></i> Inviter un intervenant</button></div>
+</div>
+<div class="nav-bar">
+<div class="nav-item " onclick="go('screen-dashboard')"><i class="ti ti-home"></i><span class="nav-label">Accueil</span></div>
+<div class="nav-item " onclick="go('screen-agenda')"><i class="ti ti-calendar"></i><span class="nav-label">Agenda</span></div>
+<div class="nav-item " onclick="go('screen-documents')"><i class="ti ti-file"></i><span class="nav-label">Documents</span></div>
+<div class="nav-item active" onclick="go('screen-cercle')"><i class="ti ti-users"></i><span class="nav-label">Cercle</span></div>
+<div class="nav-item " onclick="go('screen-jacob-soon')"><i class="ti ti-message-circle"></i><span class="nav-label">Agent IA</span></div>
+</div></div>
+
+<!-- INTERV DETAIL -->
+<div class="screen" id="screen-interv-detail">
+<div class="status-bar dark"><span class="status-time">9:41</span><div class="status-icons"><i class="ti ti-wifi"></i><i class="ti ti-battery"></i></div></div>
+<div class="profile-header"><div class="h-icon" onclick="go('screen-cercle')"><i class="ti ti-arrow-left"></i></div><div class="profile-av" style="margin-left:8px">FA</div><div><p class="profile-name">Fatima</p><p class="profile-role">Auxiliaire de vie</p></div></div>
+<div style="flex:1;overflow-y:auto">
+<div class="info-block">
+<div class="info-row"><i class="ti ti-phone"></i><div><p class="info-txt">06 12 34 56 78</p></div></div>
+<div class="info-row"><i class="ti ti-clock"></i><div><p class="info-txt">Lundi, mercredi, vendredi</p><p class="info-sub">8h00 — 12h00</p></div></div>
+<div class="info-row"><i class="ti ti-building"></i><div><p class="info-txt">Association Bien Chez Soi</p></div></div>
+<div class="info-row"><i class="ti ti-calendar"></i><div><p class="info-txt">Intervient depuis mars 2025</p></div></div>
+</div>
+<div class="access-block">
+<p class="access-title">Droits d&apos;accès</p>
+<div class="access-row"><span class="access-label">Carnet de liaison</span><div class="toggle" onclick="this.classList.toggle('off')"></div></div>
+<div class="access-row"><span class="access-label">Agenda médical</span><div class="toggle" onclick="this.classList.toggle('off')"></div></div>
+<div class="access-row"><span class="access-label">Journal de santé</span><div class="toggle" onclick="this.classList.toggle('off')"></div></div>
+<div class="access-row"><span class="access-label">Documents médicaux</span><div class="toggle off" onclick="this.classList.toggle('off')"></div></div>
+<div class="access-row"><span class="access-label">Ordonnances</span><div class="toggle off" onclick="this.classList.toggle('off')"></div></div>
+<div class="access-row"><span class="access-label">Coffre-fort</span><div class="toggle off" onclick="this.classList.toggle('off')"></div></div>
+</div>
+<div class="action-row">
+<button class="action-btn call"><i class="ti ti-phone"></i> Appeler</button>
+<button class="action-btn msg"><i class="ti ti-message-circle"></i> Message</button>
+<button class="action-btn del"><i class="ti ti-trash"></i> Retirer</button>
+</div>
+</div>
+<div class="nav-bar">
+<div class="nav-item " onclick="go('screen-dashboard')"><i class="ti ti-home"></i><span class="nav-label">Accueil</span></div>
+<div class="nav-item " onclick="go('screen-agenda')"><i class="ti ti-calendar"></i><span class="nav-label">Agenda</span></div>
+<div class="nav-item " onclick="go('screen-documents')"><i class="ti ti-file"></i><span class="nav-label">Documents</span></div>
+<div class="nav-item active" onclick="go('screen-cercle')"><i class="ti ti-users"></i><span class="nav-label">Cercle</span></div>
+<div class="nav-item " onclick="go('screen-jacob-soon')"><i class="ti ti-message-circle"></i><span class="nav-label">Agent IA</span></div>
+</div></div>
+
+<!-- DOCUMENTS -->
+<div class="screen" id="screen-documents">
+<div class="status-bar dark"><span class="status-time">9:41</span><div class="status-icons"><i class="ti ti-wifi"></i><i class="ti ti-battery"></i></div></div>
+<div class="page-header"><p class="page-title">Documents</p><div style="display:flex;gap:8px"><div class="proche-pill"><div class="proche-dot"></div><span class="proche-pill-name">Laura</span></div><div class="h-icon"><i class="ti ti-upload"></i></div></div></div>
+<div style="flex:1;overflow-y:auto">
+<div class="search-bar"><i class="ti ti-search"></i><span>Rechercher un document…</span></div>
+<div class="filter-row"><div class="filter-chip active">Tous (12)</div><div class="filter-chip">Identité</div><div class="filter-chip">Médical</div><div class="filter-chip">Juridique</div><div class="filter-chip">Assurance</div></div>
+<p class="sec-label">Identité &amp; administratif</p>
+<div class="doc-card" onclick="go('screen-doc-detail')"><div class="doc-icon ic-blue"><i class="ti ti-id"></i></div><div style="flex:1"><p class="doc-name">Carte d&apos;identité</p><p class="doc-meta">Ajouté jan. 2025</p><span class="doc-bdg bdg-exp">Expire nov. 2026</span></div><i class="ti ti-chevron-right" style="font-size:16px;color:var(--brun-light)"></i></div>
+<div class="doc-card"><div class="doc-icon ic-green"><i class="ti ti-heart"></i></div><div style="flex:1"><p class="doc-name">Carte vitale</p><p class="doc-meta">N° 2 52 04 75 014 042</p><span class="doc-bdg bdg-ok">À jour</span></div><i class="ti ti-chevron-right" style="font-size:16px;color:var(--brun-light)"></i></div>
+<div class="doc-card"><div class="doc-icon ic-purple"><i class="ti ti-shield"></i></div><div style="flex:1"><p class="doc-name">Mutuelle — MGEN</p><p class="doc-meta">Ajouté jan. 2025</p><span class="doc-bdg bdg-ok">À jour</span></div><i class="ti ti-chevron-right" style="font-size:16px;color:var(--brun-light)"></i></div>
+<p class="sec-label">Médical</p>
+<div class="doc-card"><div class="doc-icon ic-terra"><i class="ti ti-file-text"></i></div><div style="flex:1"><p class="doc-name">Ordonnance — Parkinson</p><p class="doc-meta">Dr. Benali — juin 2026</p><span class="doc-bdg bdg-new">Récent</span></div><i class="ti ti-chevron-right" style="font-size:16px;color:var(--brun-light)"></i></div>
+<div class="doc-card"><div class="doc-icon ic-blue"><i class="ti ti-report-medical"></i></div><div style="flex:1"><p class="doc-name">Compte-rendu IRM</p><p class="doc-meta">CHU Lariboisière — avr. 2026</p><span class="doc-bdg bdg-ok">Archivé</span></div><i class="ti ti-chevron-right" style="font-size:16px;color:var(--brun-light)"></i></div>
+<p class="sec-label">Coffre-fort</p>
+<div class="coffre-banner"><div class="coffre-icon"><i class="ti ti-lock"></i></div><div style="flex:1"><p class="coffre-title">Documents sensibles</p><p class="coffre-sub">Tutelle, testament, directives anticipées</p></div><button class="coffre-btn">Accéder</button></div>
+<div style="padding:0.5rem 1.4rem 1rem"><button class="btn-full"><i class="ti ti-upload"></i> Ajouter un document</button></div>
+</div>
+<div class="nav-bar">
+<div class="nav-item " onclick="go('screen-dashboard')"><i class="ti ti-home"></i><span class="nav-label">Accueil</span></div>
+<div class="nav-item " onclick="go('screen-agenda')"><i class="ti ti-calendar"></i><span class="nav-label">Agenda</span></div>
+<div class="nav-item active" onclick="go('screen-documents')"><i class="ti ti-file"></i><span class="nav-label">Documents</span></div>
+<div class="nav-item " onclick="go('screen-cercle')"><i class="ti ti-users"></i><span class="nav-label">Cercle</span></div>
+<div class="nav-item " onclick="go('screen-jacob-soon')"><i class="ti ti-message-circle"></i><span class="nav-label">Agent IA</span></div>
+</div></div>
+
+<!-- DOC DETAIL -->
+<div class="screen" id="screen-doc-detail">
+<div class="status-bar dark"><span class="status-time">9:41</span><div class="status-icons"><i class="ti ti-wifi"></i><i class="ti ti-battery"></i></div></div>
+<div style="background:var(--brun);padding:0.9rem 1.4rem;display:flex;align-items:center;gap:10px"><div class="h-icon" onclick="go('screen-documents')"><i class="ti ti-arrow-left"></i></div><div style="flex:1"><p style="font-size:14px;font-weight:500;color:var(--ivoire)">Carte d&apos;identité</p><p style="font-size:11px;color:var(--peche)">Identité &amp; administratif</p></div><div class="h-icon"><i class="ti ti-share"></i></div></div>
+<div style="flex:1;overflow-y:auto">
+<div class="doc-preview">
+<div class="preview-top"><i class="ti ti-id"></i><p class="preview-top-name">Carte nationale d&apos;identité</p><p class="preview-top-info">PDF · 1.2 Mo · jan. 2025</p></div>
+<div class="preview-details">
+<div class="preview-row"><span class="preview-key">Nom complet</span><span class="preview-val">Laura Amrani</span></div>
+<div class="preview-row"><span class="preview-key">Date de naissance</span><span class="preview-val">12/04/1952</span></div>
+<div class="preview-row"><span class="preview-key">Expiration</span><span class="preview-val exp">Nov. 2026 ⚠️</span></div>
+<div class="preview-row"><span class="preview-key">Accès autorisé</span><span class="preview-val">Karim, Sara</span></div>
+</div></div>
+<div class="doc-actions">
+<button class="doc-act-btn"><i class="ti ti-eye"></i> Voir</button>
+<button class="doc-act-btn"><i class="ti ti-download"></i> Télécharger</button>
+<button class="doc-act-btn primary"><i class="ti ti-refresh"></i> Mettre à jour</button>
+</div>
+</div>
+<div class="nav-bar">
+<div class="nav-item " onclick="go('screen-dashboard')"><i class="ti ti-home"></i><span class="nav-label">Accueil</span></div>
+<div class="nav-item " onclick="go('screen-agenda')"><i class="ti ti-calendar"></i><span class="nav-label">Agenda</span></div>
+<div class="nav-item active" onclick="go('screen-documents')"><i class="ti ti-file"></i><span class="nav-label">Documents</span></div>
+<div class="nav-item " onclick="go('screen-cercle')"><i class="ti ti-users"></i><span class="nav-label">Cercle</span></div>
+<div class="nav-item " onclick="go('screen-jacob-soon')"><i class="ti ti-message-circle"></i><span class="nav-label">Agent IA</span></div>
+</div></div>
+
+<!-- CARNET -->
+<div class="screen" id="screen-carnet">
+<div class="status-bar dark"><span class="status-time">9:41</span><div class="status-icons"><i class="ti ti-wifi"></i><i class="ti ti-battery"></i></div></div>
+<div class="page-header"><p class="page-title">Carnet de liaison</p><div style="display:flex;gap:8px"><div class="proche-pill"><div class="proche-dot"></div><span class="proche-pill-name">Laura</span></div><div class="h-icon"><i class="ti ti-filter"></i></div></div></div>
+<div style="flex:1;overflow-y:auto">
+<div class="filter-row"><div class="filter-chip active">Tous</div><div class="filter-chip">Infirmière</div><div class="filter-chip">Aide vie</div><div class="filter-chip">Famille</div></div>
+<div class="day-sep">Aujourd&apos;hui — 22 juin<div class="day-sep-line"></div></div>
+<div class="passage-card">
+<div class="passage-top"><div class="p-av av-inf">NA</div><div style="flex:1"><p class="passage-name">Nadia — Infirmière</p><p class="passage-role">Passage matin</p></div><span class="passage-time">8h30</span></div>
+<div class="passage-body"><p class="passage-note">Tension 13/8. Médicaments du matin administrés. Laura de bonne humeur, a bien dormi.</p><div class="passage-tags"><span class="ptag ptag-ok">Médicaments pris</span><span class="ptag ptag-ok">Tension normale</span></div></div>
+<div class="passage-footer"><span class="p-duration"><i class="ti ti-clock"></i> 35 min</span><span class="p-status s-done">Terminé</span></div>
+</div>
+<div class="passage-card">
+<div class="passage-top"><div class="p-av av-aide">FA</div><div style="flex:1"><p class="passage-name">Fatima — Auxiliaire de vie</p><p class="passage-role">Aide à la toilette &amp; repas</p></div><span class="passage-time">10h00</span></div>
+<div class="passage-body"><p class="passage-note">Toilette effectuée. Petit déjeuner pris en totalité. Légère rigidité des membres ce matin, exercices réalisés.</p><div class="passage-tags"><span class="ptag ptag-ok">Repas complet</span><span class="ptag ptag-warn">Rigidité notée</span></div></div>
+<div class="passage-footer"><span class="p-duration"><i class="ti ti-clock"></i> 1h15</span><span class="p-status s-done">Terminé</span></div>
+</div>
+<div class="day-sep">Hier — 21 juin<div class="day-sep-line"></div></div>
+<div class="passage-card">
+<div class="passage-top"><div class="p-av av-fam">KA</div><div style="flex:1"><p class="passage-name">Karim — Famille</p><p class="passage-role">Visite après-midi</p></div><span class="passage-time">15h00</span></div>
+<div class="passage-body"><p class="passage-note">Belle après-midi ensemble, promenade dans le jardin. Laura a reconnu des photos de famille.</p><div class="passage-tags"><span class="ptag ptag-ok">Bonne humeur</span><span class="ptag ptag-info">Stimulation mémoire</span></div></div>
+<div class="passage-footer"><span class="p-duration"><i class="ti ti-clock"></i> 3h00</span><span class="p-status s-done">Terminé</span></div>
+</div>
+<div style="padding:0.5rem 1.4rem 1rem"><button class="btn-full" onclick="go('screen-nouveau-passage')"><i class="ti ti-plus"></i> Noter un passage</button></div>
+</div>
+<div class="nav-bar">
+<div class="nav-item " onclick="go('screen-dashboard')"><i class="ti ti-home"></i><span class="nav-label">Accueil</span></div>
+<div class="nav-item " onclick="go('screen-agenda')"><i class="ti ti-calendar"></i><span class="nav-label">Agenda</span></div>
+<div class="nav-item " onclick="go('screen-documents')"><i class="ti ti-file"></i><span class="nav-label">Documents</span></div>
+<div class="nav-item active" onclick="go('screen-cercle')"><i class="ti ti-users"></i><span class="nav-label">Cercle</span></div>
+<div class="nav-item " onclick="go('screen-jacob-soon')"><i class="ti ti-message-circle"></i><span class="nav-label">Agent IA</span></div>
+</div></div>
+
+<!-- NOUVEAU PASSAGE -->
+<div class="screen" id="screen-nouveau-passage">
+<div class="status-bar dark"><span class="status-time">9:41</span><div class="status-icons"><i class="ti ti-wifi"></i><i class="ti ti-battery"></i></div></div>
+<div style="background:var(--brun);padding:0.9rem 1.4rem;display:flex;align-items:center;justify-content:space-between"><div style="display:flex;align-items:center;gap:10px"><div class="h-icon" onclick="go('screen-carnet')"><i class="ti ti-arrow-left"></i></div><p class="page-title" style="font-size:21px">Nouveau passage</p></div><div class="h-icon"><i class="ti ti-check"></i></div></div>
+<div style="flex:1;overflow-y:auto;padding:1.2rem 1.4rem">
+<p class="form-section">Informations</p>
+<div class="field-block">
+<div class="field-row"><i class="ti ti-user"></i><span class="field-row-label">Intervenant</span><span class="field-row-val filled">Fatima</span></div>
+<div class="field-row"><i class="ti ti-tag"></i><span class="field-row-label">Type</span><span class="field-row-val filled">Aide à domicile</span></div>
+<div class="field-row"><i class="ti ti-calendar"></i><span class="field-row-label">Date &amp; heure</span><span class="field-row-val filled">22 juin — 10h00</span></div>
+<div class="field-row"><i class="ti ti-clock"></i><span class="field-row-label">Durée</span><span class="field-row-val">Sélectionner</span></div>
+</div>
+<p class="form-section">État général de Laura</p>
+<div class="mood-grid">
+<div class="mood-btn" onclick="selectMood(this)"><span class="mood-emoji">😊</span><span class="mood-text">Très bien</span></div>
+<div class="mood-btn selected" onclick="selectMood(this)"><span class="mood-emoji">🙂</span><span class="mood-text">Bien</span></div>
+<div class="mood-btn" onclick="selectMood(this)"><span class="mood-emoji">😐</span><span class="mood-text">Neutre</span></div>
+<div class="mood-btn" onclick="selectMood(this)"><span class="mood-emoji">😔</span><span class="mood-text">Fatigué</span></div>
+<div class="mood-btn" onclick="selectMood(this)"><span class="mood-emoji">😟</span><span class="mood-text">Difficile</span></div>
+<div class="mood-btn" onclick="selectMood(this)"><span class="mood-emoji">🚨</span><span class="mood-text">Urgent</span></div>
+</div>
+<p class="form-section">Observations</p>
+<div class="textarea-block"><p class="textarea-lbl">Notes du passage</p><p class="fake-text">Toilette effectuée. Laura a bien mangé ce matin.</p></div>
+<button class="btn-full" onclick="go('screen-carnet')"><i class="ti ti-check"></i> Enregistrer le passage</button>
+</div>
+<div class="nav-bar">
+<div class="nav-item " onclick="go('screen-dashboard')"><i class="ti ti-home"></i><span class="nav-label">Accueil</span></div>
+<div class="nav-item " onclick="go('screen-agenda')"><i class="ti ti-calendar"></i><span class="nav-label">Agenda</span></div>
+<div class="nav-item " onclick="go('screen-documents')"><i class="ti ti-file"></i><span class="nav-label">Documents</span></div>
+<div class="nav-item active" onclick="go('screen-cercle')"><i class="ti ti-users"></i><span class="nav-label">Cercle</span></div>
+<div class="nav-item " onclick="go('screen-jacob-soon')"><i class="ti ti-message-circle"></i><span class="nav-label">Agent IA</span></div>
+</div></div>
+
+<!-- JACOB BIENTÔT -->
+<div class="screen" id="screen-jacob-soon">
+<div class="status-bar dark"><span class="status-time">9:41</span><div class="status-icons"><i class="ti ti-wifi"></i><i class="ti ti-battery"></i></div></div>
+<div style="background:var(--brun);padding:1rem 1.4rem 1.3rem;display:flex;align-items:center;justify-content:space-between"><p class="page-title">Agent IA</p><div class="proche-pill"><div class="proche-dot"></div><span class="proche-pill-name">Laura</span></div></div>
+<div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem;text-align:center">
+<div style="width:80px;height:80px;border-radius:50%;overflow:hidden;margin-bottom:1.5rem;border:2px solid var(--terra)"><svg width="80" height="80" viewBox="0 0 80 80" fill="none"><circle cx="40" cy="40" r="40" fill="#C4805A"/><ellipse cx="40" cy="34" rx="14" ry="15" fill="#E8C4A8"/><circle cx="35" cy="32" r="2.5" fill="#3D2B1F"/><circle cx="45" cy="32" r="2.5" fill="#3D2B1F"/><circle cx="36" cy="31" r="0.8" fill="#FAF6F1"/><circle cx="46" cy="31" r="0.8" fill="#FAF6F1"/><path d="M35 38 Q40 42 45 38" stroke="#3D2B1F" stroke-width="1.5" fill="none" stroke-linecap="round"/><ellipse cx="40" cy="60" rx="18" ry="12" fill="#D4956E"/></svg></div>
+<p style="font-family:'Cormorant Garamond',serif;font-size:34px;color:var(--brun);letter-spacing:3px;margin-bottom:6px">Jacob</p>
+<p style="font-size:14px;color:var(--terra-mid);margin-bottom:1.5rem">Compagnon de Laura · Agent Sereno</p>
+<div style="background:var(--brun-bg);border-radius:16px;padding:1.5rem;margin-bottom:2rem">
+<p style="font-size:24px;margin-bottom:8px">🌿</p>
+<p style="font-size:14px;font-weight:500;color:var(--brun);margin-bottom:6px">Bientôt disponible</p>
+<p style="font-size:13px;color:var(--brun-texte);line-height:1.65">Jacob arrive dans la prochaine version de Sereno. Il conversera avec Laura chaque jour, stimulera sa mémoire et vous alertera si quelque chose le préoccupe.</p>
+</div>
+<button class="btn-full" onclick="go('screen-dashboard')"><i class="ti ti-arrow-left"></i> Retour à l&apos;accueil</button>
+</div>
+<div class="nav-bar">
+<div class="nav-item " onclick="go('screen-dashboard')"><i class="ti ti-home"></i><span class="nav-label">Accueil</span></div>
+<div class="nav-item " onclick="go('screen-agenda')"><i class="ti ti-calendar"></i><span class="nav-label">Agenda</span></div>
+<div class="nav-item " onclick="go('screen-documents')"><i class="ti ti-file"></i><span class="nav-label">Documents</span></div>
+<div class="nav-item " onclick="go('screen-cercle')"><i class="ti ti-users"></i><span class="nav-label">Cercle</span></div>
+<div class="nav-item active" onclick="go('screen-jacob-soon')"><i class="ti ti-message-circle"></i><span class="nav-label">Agent IA</span></div>
+</div></div>
+
+</div>
+<script>
+function go(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));var t=document.getElementById(id);if(t){t.classList.add('active');t.scrollTop=0;}}
+function selectRole(card){document.querySelectorAll('.role-card').forEach(c=>{c.classList.remove('selected');c.querySelector('.radio-dot').classList.remove('on');});card.classList.add('selected');card.querySelector('.radio-dot').classList.add('on');}
+function selectMood(btn){document.querySelectorAll('.mood-btn').forEach(b=>b.classList.remove('selected'));btn.classList.add('selected');}
+</script>
+</body>
+</html>
