@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Sereno</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<style>
+:root{--brun:#3D2B1F;--terra:#C4805A;--terra-mid:#B07C60;--peche:#E8C4A8;--ivoire:#FAF6F1;--fond:#F0EAE2;--sauge:#6B9E8A;--brun-texte:#7A6055;--brun-light:#D4C4B8;--brun-border:#E0D5CA;--brun-bg:#F5EDE3;}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+body{background:var(--fond);font-family:"DM Sans",sans-serif;display:flex;justify-content:center;min-height:100vh;padding:1.5rem 1rem;}
+.phone{width:375px;min-height:812px;background:var(--ivoire);border-radius:40px;border:2px solid var(--brun-border);overflow:hidden;box-shadow:0 20px 60px rgba(61,43,31,0.15);display:flex;flex-direction:column;position:relative;}
+.screen{display:none;flex-direction:column;flex:1;overflow:hidden;}
+.screen.active{display:flex;}
+.scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;}
+.sb{background:var(--ivoire);padding:14px 22px 6px;display:flex;justify-content:space-between;align-items:center;flex-shrink:0;}
+.sb.dark{background:var(--brun);}
+.sb .time{font-size:14px;font-weight:500;color:var(--brun);}
+.sb.dark .time{color:var(--ivoire);}
+.sb .icons{display:flex;gap:4px;}
+.sb .icons i{font-size:15px;color:var(--brun);}
+.sb.dark .icons i{color:var(--ivoire);}
+.ph{background:var(--brun);padding:1rem 1.4rem 1.2rem;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.ph-title{font-family:"Cormorant Garamond",serif;font-weight:300;font-size:26px;color:var(--ivoire);}
+.hbtn{width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,0.1);display:flex;align-items:center;justify-content:center;cursor:pointer;border:none;}
+.hbtn i{font-size:17px;color:var(--peche);}
+.ppill{background:rgba(255,255,255,0.12);border-radius:20px;padding:4px 10px;display:flex;align-items:center;gap:6px;}
+.ppill-dot{width:7px;height:7px;border-radius:50%;background:var(--sauge);}
+.ppill span{font-size:12px;color:var(--ivoire);}
+.nav{background:var(--ivoire);border-top:0.5px solid var(--brun-border);padding:10px 0 8px;display:flex;justify-content:space-around;flex-shrink:0;}
+.ni{display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;padding:0 8px;background:none;border:none;}
+.ni i{font-size:22px;color:var(--brun-light);}
+.ni span{font-size:10px;color:var(--brun-light);}
+.ni.on i,.ni.on span{color:var(--terra);}
+.btn{width:100%;background:var(--terra);color:var(--ivoire);font-family:"DM Sans",sans-serif;font-size:13px;letter-spacing:1.5px;text-transform:uppercase;padding:14px;border-radius:50px;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;}
+.btn:active{opacity:0.85;}
+.btn.ghost{background:transparent;color:var(--terra-mid);border:1px solid var(--brun-border);}
+.btn.sm{font-size:11px;padding:10px 18px;width:auto;letter-spacing:1px;}
+.btn.danger{background:#FCF0F0;color:#C0392B;}
+.sl{font-size:11px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:var(--terra-mid);padding:0.8rem 1.4rem 0.5rem;display:block;}
+.chip{font-size:10px;padding:2px 8px;border-radius:20px;display:inline-block;}
+.chip.green{background:#EEF7F3;color:#3B7A62;}
+.chip.orange{background:#FEF5EF;color:var(--terra);}
+.chip.purple{background:#F0EAF7;color:#6B4C99;}
+.chip.blue{background:#E8F4FD;color:#1565C0;}
+.chip.red{background:#FCF0F0;color:#C0392B;}
+.card{background:#fff;border:0.5px solid var(--brun-border);border-radius:14px;}
+.fl{font-size:12px;font-weight:500;color:var(--brun-texte);margin-bottom:5px;display:block;}
+.fi{width:100%;background:#fff;border:1px solid var(--brun-border);border-radius:10px;padding:11px 13px;font-family:"DM Sans",sans-serif;font-size:14px;color:var(--brun);outline:none;}
+.fi:focus{border-color:var(--terra);}
+.fi-wrap{margin-bottom:12px;}
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:100;align-items:flex-end;justify-content:center;}
+.modal-bg.open{display:flex;}
+.modal{background:var(--ivoire);border-radius:24px 24px 0 0;padding:1.5rem 1.4rem 2rem;width:375px;max-height:85vh;overflow-y:auto;}
+.modal-title{font-family:"Cormorant Garamond",serif;font-size:24px;color:var(--brun);margin-bottom:1rem;}
+.modal-close{float:right;background:none;border:none;font-size:22px;color:var(--brun-texte);cursor:pointer;margin-top:-4px;}
+.avatar-circle{width:72px;height:72px;border-radius:50%;background:var(--terra);display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:500;color:#fff;flex-shrink:0;overflow:hidden;cursor:pointer;position:relative;}
+.avatar-circle img{width:100%;height:100%;object-fit:cover;}
+.avatar-circle .cam{position:absolute;bottom:0;right:0;width:22px;height:22px;background:var(--brun);border-radius:50%;display:flex;align-items:center;justify-content:center;}
+.avatar-circle .cam i{font-size:11px;color:#fff;}
+.av-sm{width:40px;height:40px;border-radius:50%;background:var(--terra);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:500;color:#fff;flex-shrink:0;overflow:hidden;}
+.av-sm img{width:100%;height:100%;object-fit:cover;}
+.toggle{width:40px;height:22px;border-radius:11px;background:var(--sauge);position:relative;cursor:pointer;flex-shrink:0;border:none;}
+.toggle::after{content:"";width:18px;height:18px;border-radius:50%;background:#fff;position:absolute;top:2px;right:2px;transition:0.2s;}
+.toggle.off{background:var(--brun-border);}
+.toggle.off::after{right:auto;left:2px;}
+.progress-bar{height:3px;background:var(--brun-border);border-radius:2px;margin-bottom:1.4rem;}
+.pf{height:3px;background:var(--terra);border-radius:2px;}
+.row{display:flex;align-items:center;gap:10px;}
+.frow{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:0.5px solid #F0E8E0;}
+.frow:last-child{border-bottom:none;}
+.frow i{font-size:16px;color:var(--terra);flex-shrink:0;width:20px;}
+.cat-hdr{display:flex;align-items:center;gap:8px;margin:0 1.4rem 8px;}
+.cat-line{flex:1;height:0.5px;background:var(--brun-border);}
+.cat-lbl{font-size:11px;color:var(--terra-mid);font-weight:500;letter-spacing:1px;text-transform:uppercase;white-space:nowrap;}
+.filter-row{display:flex;gap:7px;padding:0.7rem 1.4rem;overflow-x:auto;}
+.fc{background:#fff;color:var(--brun-texte);font-size:12px;padding:5px 13px;border-radius:20px;border:0.5px solid var(--brun-border);white-space:nowrap;cursor:pointer;flex-shrink:0;}
+.fc.on{background:var(--brun);color:var(--ivoire);border-color:var(--brun);}
+.divider{height:0.5px;background:var(--brun-border);margin:0 1.4rem;}
+.empty{text-align:center;padding:3rem 1.4rem;color:var(--brun-texte);font-size:13px;line-height:1.7;}
+.empty i{font-size:40px;color:var(--brun-light);display:block;margin-bottom:0.8rem;}
+select.fi{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23B07C60' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;}
+textarea.fi{resize:none;min-height:90px;}
+.toast{position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:var(--brun);color:#fff;padding:10px 20px;border-radius:30px;font-size:13px;z-index:200;opacity:0;transition:opacity 0.3s;pointer-events:none;}
+.toast.show{opacity:1;}
+</style>
+</head>
+<body>
+<div class="phone" id="app">
+
+<!-- ═══════════ SPLASH ═══════════ -->
+<div class="screen active" id="s-splash">
+<div class="sb"><span class="time">9:41</span><div class="icons"><i class="ti ti-wifi"></i><i class="ti ti-battery"></i></div></div>
+<div class="scroll" style="display:flex;flex-direction:column;align-items:center;padding:2.5rem 1.6rem 2rem;background:var(--ivoire)">
+<svg width="64" height="64" viewBox="0 0 56 56" fill="none" style="margin-top:1rem"><circle cx="28" cy="28" r="26.5" stroke="#C4805A" stroke-width="1"/><g transform="translate(28,30) scale(0.88)"><line x1="0" y1="14" x2="0" y2="-18" stroke="#3D2B1F" stroke-width="1.2" stroke-linecap="round"/><line x1="0" y1="6" x2="-13" y2="-2" stroke="#3D2B1F" stroke-width="1" stroke-linecap="round"/><line x1="0" y1="6" x2="13" y2="-2" stroke="#3D2B1F" stroke-width="1" stroke-linecap="round"/><line x1="0" y1="-1" x2="-10" y2="-8" stroke="#3D2B1F" stroke-width="0.9" stroke-linecap="round"/><line x1="0" y1="-1" x2="10" y2="-8" stroke="#3D2B1F" stroke-width="0.9" stroke-linecap="round"/><line x1="0" y1="-8" x2="-7" y2="-14" stroke="#3D2B1F" stroke-width="0.8" stroke-linecap="round"/><line x1="0" y1="-8" x2="7" y2="-14" stroke="#3D2B1F" stroke-width="0.8" stroke-linecap="round"/><line x1="0" y1="-14" x2="-4" y2="-18" stroke="#3D2B1F" stroke-width="0.7" stroke-linecap="round"/><line x1="0" y1="-14" x2="4" y2="-18" stroke="#3D2B1F" stroke-width="0.7" stroke-linecap="round"/><line x1="-13" y1="-2" x2="-18" y2="-5" stroke="#C4805A" stroke-width="0.7" stroke-linecap="round"/><line x1="-13" y1="-2" x2="-16" y2="1" stroke="#C4805A" stroke-width="0.7" stroke-linecap="round"/><line x1="13" y1="-2" x2="18" y2="-5" stroke="#C4805A" stroke-width="0.7" stroke-linecap="round"/><line x1="13" y1="-2" x2="16" y2="1" stroke="#C4805A" stroke-width="0.7" stroke-linecap="round"/><line x1="-10" y1="-8" x2="-14" y2="-11" stroke="#C4805A" stroke-width="0.7" stroke-linecap="round"/><line x1="-10" y1="-8" x2="-13" y2="-5" stroke="#C4805A" stroke-width="0.7" stroke-linecap="round"/><line x1="10" y1="-8" x2="14" y2="-11" stroke="#C4805A" stroke-width="0.7" stroke-linecap="round"/><line x1="10" y1="-8" x2="13" y2="-5" stroke="#C4805A" stroke-width="0.7" stroke-linecap="round"/></g></svg>
+<p style="font-family:'Cormorant Garamond',serif;font-size:44px;letter-spacing:7px;color:var(--brun);text-align:center;margin:1rem 0 4px">sereno</p>
+<p style="font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--terra-mid);text-align:center;margin-bottom:2.5rem">prendre soin, en toute sérénité</p>
+<p style="font-family:'Cormorant Garamond',serif;font-size:24px;color:var(--brun);text-align:center;line-height:1.35;margin-bottom:8px">Votre espace de soin partagé</p>
+<p style="font-size:13px;color:var(--brun-texte);text-align:center;line-height:1.65;margin-bottom:2.5rem">Centralisez, coordonnez et partagez le suivi de vos proches — en toute simplicité.</p>
+<div style="width:100%;display:flex;flex-direction:column;gap:10px;margin-top:auto">
+<button class="btn" onclick="G.start()">Commencer</button>
+<button class="btn ghost" onclick="G.load()">J'ai déjà un compte</button>
+<button class="btn ghost danger" onclick="G.reset()" style="font-size:11px;padding:8px">Réinitialiser les données</button>
+</div>
+</div>
+</div>
+
+<!-- ═══════════ ONBOARDING PROFIL ═══════════ -->
+<div class="screen" id="s-ob1">
+<div class="sb"><span class="time">9:42</span><div class="icons"><i class="ti ti-wifi"></i><i class="ti ti-battery"></i></div></div>
+<div class="scroll" style="padding:1.4rem">
+<p style="font-size:11px;color:var(--terra-mid);font-weight:500;letter-spacing:1px;text-transform:uppercase;margin-bottom:5px">Étape 1 sur 3</p>
+<p style="font-family:'Cormorant Garamond',serif;font-size:26px;color:var(--brun);margin-bottom:4px">Qui êtes-vous ?</p>
+<p style="font-size:13px;color:var(--brun-texte);margin-bottom:1rem">Votre interface s'adapte à votre rôle.</p>
+<div class="progress-bar"><div class="pf" style="width:33%"></div></div>
+<div id="roles"></div>
+<div style="margin-top:1.5rem"><button class="btn" onclick="G.ob1Next()">Continuer</button></div>
+</div>
+</div>
+
+<!-- ═══════════ ONBOARDING PROCHE ═══════════ -->
+<div class="screen" id="s-ob2">
+<div class="sb"><span class="time">9:43</span><div class="icons"><i class="ti ti-wifi"></i><i class="ti ti-battery"></i></div></div>
+<div class="scroll" style="padding:1.4rem">
+<p style="font-size:11px;color:var(--terra-mid);font-weight:500;letter-spacing:1px;text-transform:uppercase;margin-bottom:5px">Étape 2 sur 3</p>
+<p style="font-family:'Cormorant Garamond',serif;font-size:26px;color:var(--brun);margin-bottom:4px">Votre proche</p>
+<p style="font-size:13px;color:var(--brun-texte);margin-bottom:1rem">Ces informations resteront privées et sécurisées.</p>
+<div class="progress-bar"><div class="pf" style="width:66%"></div></div>
+<div style="display:flex;justify-content:center;margin-bottom:1.2rem">
+<div class="avatar-circle" id="ob-av" onclick="document.getElementById('ob-photo').click()">
+<span id="ob-av-init">?</span>
+<div class="cam"><i class="ti ti-camera"></i></div>
+</div>
+<input type="file" id="ob-photo" accept="image/*" style="display:none" onchange="G.setProPhoto(this)">
+</div>
+<div class="fi-wrap"><label class="fl">Prénom *</label><input class="fi" id="ob-prenom" placeholder="Prénom" oninput="G.updateAvInit()"></div>
+<div class="fi-wrap"><label class="fl">Nom</label><input class="fi" id="ob-nom" placeholder="Nom de famille"></div>
+<div class="fi-wrap"><label class="fl">Date de naissance</label><input class="fi" id="ob-ddn" type="date"></div>
+<div class="fi-wrap"><label class="fl">Pathologie principale</label><input class="fi" id="ob-patho" placeholder="ex : Maladie de Parkinson"></div>
+<div class="fi-wrap"><label class="fl">Numéro de sécurité sociale</label><input class="fi" id="ob-secu" placeholder="Optionnel"></div>
+<div style="margin-top:0.5rem"><button class="btn" onclick="G.ob2Next()">Continuer</button></div>
+</div>
+</div>
+
+<!-- ═══════════ ONBOARDING AIDANT ═══════════ -->
+<div class="screen" id="s-ob3">
+<div class="sb"><span class="time">9:44</span><div class="icons"><i class="ti ti-wifi"></i><i class="ti ti-battery"></i></div></div>
+<div class="scroll" style="padding:1.4rem">
+<p style="font-size:11px;color:var(--terra-mid);font-weight:500;letter-spacing:1px;text-transform:uppercase;margin-bottom:5px">Étape 3 sur 3</p>
+<p style="font-family:'Cormorant Garamond',serif;font-size:26px;color:var(--brun);margin-bottom:4px">Votre profil</p>
+<p style="font-size:13px;color:var(--brun-texte);margin-bottom:1rem">Comment souhaitez-vous être identifié ?</p>
+<div class="progress-bar"><div class="pf" style="width:100%"></div></div>
+<div style="display:flex;justify-content:center;margin-bottom:1.2rem">
+<div class="avatar-circle" id="ob-av2" onclick="document.getElementById('ob-photo2').click()">
+<span id="ob-av2-init">?</span>
+<div class="cam"><i class="ti ti-camera"></i></div>
+</div>
+<input type="file" id="ob-photo2" accept="image/*" style="display:none" onchange="G.setUserPhoto(this)">
+</div>
+<div class="fi-wrap"><label class="fl">Votre prénom *</label><input class="fi" id="ob-user-prenom" placeholder="Votre prénom" oninput="G.updateUserAvInit()"></div>
+<div class="fi-wrap"><label class="fl">Votre nom</label><input class="fi" id="ob-user-nom" placeholder="Votre nom"></div>
+<div class="fi-wrap"><label class="fl">Votre lien avec le proche</label><input class="fi" id="ob-lien" placeholder="ex : Fils, Fille, Conjoint…"></div>
+<div style="margin-top:0.5rem"><button class="btn" onclick="G.ob3Next()">Accéder à mon espace →</button></div>
+</div>
+</div>
+
+<!-- ═══════════ DASHBOARD ═══════════ -->
+<div class="screen" id="s-dash">
+<div class="sb dark"><span class="time" id="dash-time"></span><div class="icons"><i class="ti ti-wifi" style="color:var(--ivoire)"></i><i class="ti ti-battery" style="color:var(--ivoire)"></i></div></div>
+<div style="background:var(--brun);padding:1rem 1.4rem 1.3rem;flex-shrink:0">
+<p id="dash-greet" style="font-size:12px;color:var(--peche);font-weight:300;margin-bottom:2px"></p>
+<p id="dash-date" style="font-family:'Cormorant Garamond',serif;font-weight:300;font-size:24px;color:var(--ivoire);margin-bottom:1rem"></p>
+<div style="background:rgba(255,255,255,0.08);border-radius:14px;padding:10px 13px;display:flex;align-items:center;gap:11px;cursor:pointer" onclick="go('s-profil-proche')">
+<div class="av-sm" id="dash-pro-av"></div>
+<div style="flex:1"><p id="dash-pro-name" style="font-size:14px;font-weight:500;color:var(--ivoire);margin-bottom:2px"></p><p id="dash-pro-patho" style="font-size:12px;color:var(--peche);font-weight:300"></p></div>
+<span style="background:var(--sauge);color:var(--ivoire);font-size:10px;padding:3px 8px;border-radius:20px">Suivi actif</span>
+</div>
+</div>
+<div class="scroll">
+<span class="sl">Prochains rendez-vous</span>
+<div id="dash-rdv"></div>
+<span class="sl">Modules</span>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:9px;padding:0 1.4rem;margin-bottom:0.6rem">
+<div style="background:#fff;border:0.5px solid var(--brun-border);border-radius:14px;padding:13px;display:flex;flex-direction:column;gap:7px;cursor:pointer" onclick="go('s-agenda')">
+<div style="width:36px;height:36px;border-radius:10px;background:var(--brun-bg);display:flex;align-items:center;justify-content:center"><i class="ti ti-calendar" style="font-size:17px;color:var(--terra)"></i></div>
+<p style="font-size:13px;font-weight:500;color:var(--brun)">Agenda</p>
+<p id="dash-rdv-count" style="font-size:11px;color:var(--brun-texte)"></p>
+</div>
+<div style="background:#fff;border:0.5px solid var(--brun-border);border-radius:14px;padding:13px;display:flex;flex-direction:column;gap:7px;cursor:pointer" onclick="go('s-cercle')">
+<div style="width:36px;height:36px;border-radius:10px;background:var(--brun-bg);display:flex;align-items:center;justify-content:center"><i class="ti ti-users" style="font-size:17px;color:var(--terra)"></i></div>
+<p style="font-size:13px;font-weight:500;color:var(--brun)">Cercle de soin</p>
+<p id="dash-interv-count" style="font-size:11px;color:var(--brun-texte)"></p>
+</div>
+<div style="background:#fff;border:0.5px solid var(--brun-border);border-radius:14px;padding:13px;display:flex;flex-direction:column;gap:7px;cursor:pointer" onclick="go('s-docs')">
+<div style="width:36px;height:36px;border-radius:10px;background:var(--brun-bg);display:flex;align-items:center;justify-content:center"><i class="ti ti-file-text" style="font-size:17px;color:var(--terra)"></i></div>
+<p style="font-size:13px;font-weight:500;color:var(--brun)">Documents</p>
+<p id="dash-docs-count" style="font-size:11px;color:var(--brun-texte)"></p>
+</div>
+<div style="background:#fff;border:0.5px solid var(--brun-border);border-radius:14px;padding:13px;display:flex;flex-direction:column;gap:7px;cursor:pointer" onclick="go('s-carnet')">
+<div style="width:36px;height:36px;border-radius:10px;background:var(--brun-bg);display:flex;align-items:center;justify-content:center"><i class="ti ti-notebook" style="font-size:17px;color:var(--terra)"></i></div>
+<p style="font-size:13px;font-weight:500;color:var(--brun)">Carnet liaison</p>
+<p id="dash-passages-count" style="font-size:11px;color:var(--brun-texte)"></p>
+</div>
+</div>
+<div style="margin:0 1.4rem 1rem;background:var(--brun);border-radius:13px;padding:11px 13px;display:flex;align-items:center;gap:11px">
+<div style="width:34px;height:34px;border-radius:50%;background:var(--terra);display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="ti ti-message-circle" style="font-size:16px;color:var(--ivoire)"></i></div>
+<div style="flex:1"><p style="font-size:13px;font-weight:500;color:var(--ivoire);margin-bottom:2px">Jacob — Agent Sereno</p><p style="font-size:11px;color:var(--peche)">Bientôt disponible</p></div>
+<span style="background:rgba(255,255,255,0.1);color:var(--peche);font-size:10px;padding:4px 9px;border-radius:20px">À venir</span>
+</div>
+</div>
+<nav class="nav">
+<button class="ni on" onclick="go('s-dash')"><i class="ti ti-home"></i><span>Accueil</span></button>
+<button class="ni" onclick="go('s-agenda')"><i class="ti ti-calendar"></i><span>Agenda</span></button>
+<button class="ni" onclick="go('s-docs')"><i class="ti ti-file"></i><span>Documents</span></button>
+<button class="ni" onclick="go('s-cercle')"><i class="ti ti-users"></i><span>Cercle</span></button>
+<button class="ni" onclick="go('s-carnet')"><i class="ti ti-notebook"></i><span>Carnet</span></button>
+</nav>
+</div>
+
+<!-- ═══════════ PROFIL PROCHE ═══════════ -->
+<div class="screen" id="s-profil-proche">
+<div class="sb dark"><span class="time">9:41</span><div class="icons"><i class="ti ti-wifi" style="color:var(--ivoire)"></i><i class="ti ti-battery" style="color:var(--ivoire)"></i></div></div>
+<div class="ph"><div class="row"><button class="hbtn" onclick="go('s-dash')"><i class="ti ti-arrow-left"></i></button><p class="ph-title" style="font-size:21px">Profil de Laura</p></div><button class="hbtn" onclick="G.editPro()"><i class="ti ti-edit"></i></button></div>
+<div class="scroll" style="padding:1.4rem">
+<div style="display:flex;flex-direction:column;align-items:center;margin-bottom:1.5rem">
+<div class="avatar-circle" style="width:90px;height:90px;font-size:30px;margin-bottom:0.8rem" id="pro-av-big"></div>
+<p id="pro-fullname" style="font-family:'Cormorant Garamond',serif;font-size:26px;color:var(--brun);margin-bottom:4px"></p>
+<p id="pro-patho-disp" style="font-size:13px;color:var(--terra-mid)"></p>
+</div>
+<div class="card" style="padding:0.8rem 1.2rem;margin-bottom:1rem">
+<div class="frow"><i class="ti ti-calendar"></i><div><p style="font-size:13px;color:var(--brun)" id="pro-ddn-disp"></p><p style="font-size:11px;color:var(--brun-texte)">Date de naissance</p></div></div>
+<div class="frow"><i class="ti ti-shield"></i><div><p style="font-size:13px;color:var(--brun)" id="pro-secu-disp"></p><p style="font-size:11px;color:var(--brun-texte)">N° Sécurité sociale</p></div></div>
+</div>
+<button class="btn" onclick="G.editPro()"><i class="ti ti-edit"></i> Modifier le profil</button>
+</div>
+</div>
+
+<!-- ═══════════ AGENDA ═══════════ -->
+<div class="screen" id="s-agenda">
+<div class="sb dark"><span class="time">9:41</span><div class="icons"><i class="ti ti-wifi" style="color:var(--ivoire)"></i><i class="ti ti-battery" style="color:var(--ivoire)"></i></div></div>
+<div class="ph"><p class="ph-title">Agenda médical</p><div class="row"><div id="agenda-ppill" class="ppill"><div class="ppill-dot"></div><span></span></div><button class="hbtn" onclick="G.openModal('modal-rdv')"><i class="ti ti-plus"></i></button></div></div>
+<div class="scroll">
+<div id="agenda-list"></div>
+</div>
+<nav class="nav">
+<button class="ni" onclick="go('s-dash')"><i class="ti ti-home"></i><span>Accueil</span></button>
+<button class="ni on" onclick="go('s-agenda')"><i class="ti ti-calendar"></i><span>Agenda</span></button>
+<button class="ni" onclick="go('s-docs')"><i class="ti ti-file"></i><span>Documents</span></button>
+<button class="ni" onclick="go('s-cercle')"><i class="ti ti-users"></i><span>Cercle</span></button>
+<button class="ni" onclick="go('s-carnet')"><i class="ti ti-notebook"></i><span>Carnet</span></button>
+</nav>
+</div>
+
+<!-- ═══════════ CERCLE ═══════════ -->
+<div class="screen" id="s-cercle">
+<div class="sb dark"><span class="time">9:41</span><div class="icons"><i class="ti ti-wifi" style="color:var(--ivoire)"></i><i class="ti ti-battery" style="color:var(--ivoire)"></i></div></div>
+<div class="ph"><p class="ph-title">Cercle de soin</p><div class="row"><div id="cercle-ppill" class="ppill"><div class="ppill-dot"></div><span></span></div><button class="hbtn" onclick="G.openModal('modal-interv')"><i class="ti ti-plus"></i></button></div></div>
+<div class="scroll">
+<div id="cercle-list"></div>
+</div>
+<nav class="nav">
+<button class="ni" onclick="go('s-dash')"><i class="ti ti-home"></i><span>Accueil</span></button>
+<button class="ni" onclick="go('s-agenda')"><i class="ti ti-calendar"></i><span>Agenda</span></button>
+<button class="ni" onclick="go('s-docs')"><i class="ti ti-file"></i><span>Documents</span></button>
+<button class="ni on" onclick="go('s-cercle')"><i class="ti ti-users"></i><span>Cercle</span></button>
+<button class="ni" onclick="go('s-carnet')"><i class="ti ti-notebook"></i><span>Carnet</span></button>
+</nav>
+</div>
+
+<!-- ═══════════ DOCUMENTS ═══════════ -->
+<div class="screen" id="s-docs">
+<div class="sb dark"><span class="time">9:41</span><div class="icons"><i class="ti ti-wifi" style="color:var(--ivoire)"></i><i class="ti ti-battery" style="color:var(--ivoire)"></i></div></div>
+<div class="ph"><p class="ph-title">Documents</p><div class="row"><div id="docs-ppill" class="ppill"><div class="ppill-dot"></div><span></span></div><button class="hbtn" onclick="G.openModal('modal-doc')"><i class="ti ti-upload"></i></button></div></div>
+<div class="scroll">
+<div id="docs-cats"></div>
+</div>
+<nav class="nav">
+<button class="ni" onclick="go('s-dash')"><i class="ti ti-home"></i><span>Accueil</span></button>
+<button class="ni" onclick="go('s-agenda')"><i class="ti ti-calendar"></i><span>Agenda</span></button>
+<button class="ni on" onclick="go('s-docs')"><i class="ti ti-file"></i><span>Documents</span></button>
+<button class="ni" onclick="go('s-cercle')"><i class="ti ti-users"></i><span>Cercle</span></button>
+<button class="ni" onclick="go('s-carnet')"><i class="ti ti-notebook"></i><span>Carnet</span></button>
+</nav>
+</div>
+
+<!-- ═══════════ CARNET ═══════════ -->
+<div class="screen" id="s-carnet">
+<div class="sb dark"><span class="time">9:41</span><div class="icons"><i class="ti ti-wifi" style="color:var(--ivoire)"></i><i class="ti ti-battery" style="color:var(--ivoire)"></i></div></div>
+<div class="ph"><p class="ph-title">Carnet de liaison</p><div class="row"><div id="carnet-ppill" class="ppill"><div class="ppill-dot"></div><span></span></div><button class="hbtn" onclick="G.openModal('modal-passage')"><i class="ti ti-plus"></i></button></div></div>
+<div class="scroll">
+<div id="carnet-list"></div>
+</div>
+<nav class="nav">
+<button class="ni" onclick="go('s-dash')"><i class="ti ti-home"></i><span>Accueil</span></button>
+<button class="ni" onclick="go('s-agenda')"><i class="ti ti-calendar"></i><span>Agenda</span></button>
+<button class="ni" onclick="go('s-docs')"><i class="ti ti-file"></i><span>Documents</span></button>
+<button class="ni" onclick="go('s-cercle')"><i class="ti ti-users"></i><span>Cercle</span></button>
+<button class="ni on" onclick="go('s-carnet')"><i class="ti ti-notebook"></i><span>Carnet</span></button>
+</nav>
+</div>
+
+<!-- ═══════════ MODALS ═══════════ -->
+
+<!-- Modal RDV -->
+<div class="modal-bg" id="modal-rdv">
+<div class="modal">
+<button class="modal-close" onclick="G.closeModal('modal-rdv')">✕</button>
+<p class="modal-title" id="modal-rdv-title">Ajouter un RDV</p>
+<input type="hidden" id="rdv-edit-id">
+<div class="fi-wrap"><label class="fl">Spécialité / Intitulé *</label><input class="fi" id="rdv-titre" placeholder="ex : Neurologue, Kiné…"></div>
+<div class="fi-wrap"><label class="fl">Médecin / Praticien</label><input class="fi" id="rdv-medecin" placeholder="Dr. Nom"></div>
+<div class="fi-wrap"><label class="fl">Date *</label><input class="fi" id="rdv-date" type="date"></div>
+<div class="fi-wrap"><label class="fl">Heure *</label><input class="fi" id="rdv-heure" type="time"></div>
+<div class="fi-wrap"><label class="fl">Lieu</label><input class="fi" id="rdv-lieu" placeholder="Hôpital, cabinet…"></div>
+<div class="fi-wrap"><label class="fl">Catégorie</label>
+<select class="fi" id="rdv-cat">
+<option value="Neurologie">Neurologie</option>
+<option value="Rééducation">Rééducation</option>
+<option value="Généraliste">Médecin généraliste</option>
+<option value="Cardiologie">Cardiologie</option>
+<option value="Autre">Autre</option>
+</select></div>
+<div class="fi-wrap"><label class="fl">Notes</label><textarea class="fi" id="rdv-notes" placeholder="Documents à apporter, informations importantes…"></textarea></div>
+<div style="display:flex;gap:8px;margin-top:0.5rem">
+<button class="btn ghost" style="flex:1" onclick="G.closeModal('modal-rdv')">Annuler</button>
+<button class="btn" style="flex:1" onclick="G.saveRdv()">Enregistrer</button>
+</div>
+</div>
+</div>
+
+<!-- Modal Intervenant -->
+<div class="modal-bg" id="modal-interv">
+<div class="modal">
+<button class="modal-close" onclick="G.closeModal('modal-interv')">✕</button>
+<p class="modal-title" id="modal-interv-title">Ajouter un intervenant</p>
+<input type="hidden" id="interv-edit-id">
+<div style="display:flex;justify-content:center;margin-bottom:1rem">
+<div class="avatar-circle" id="interv-av" onclick="document.getElementById('interv-photo').click()">
+<span id="interv-av-init">?</span>
+<div class="cam"><i class="ti ti-camera"></i></div>
+</div>
+<input type="file" id="interv-photo" accept="image/*" style="display:none" onchange="G.setIntervPhoto(this)">
+</div>
+<div class="fi-wrap"><label class="fl">Prénom *</label><input class="fi" id="interv-prenom" placeholder="Prénom" oninput="G.updateIntervAvInit()"></div>
+<div class="fi-wrap"><label class="fl">Nom</label><input class="fi" id="interv-nom" placeholder="Nom"></div>
+<div class="fi-wrap"><label class="fl">Rôle / Fonction *</label><input class="fi" id="interv-role" placeholder="ex : Infirmière, Aide à domicile, Médecin…"></div>
+<div class="fi-wrap"><label class="fl">Catégorie</label>
+<select class="fi" id="interv-cat">
+<option value="Famille">Famille</option>
+<option value="Médical">Médical</option>
+<option value="Aide à domicile">Aide à domicile</option>
+<option value="Autre">Autre</option>
+</select></div>
+<div class="fi-wrap"><label class="fl">Téléphone</label><input class="fi" id="interv-tel" type="tel" placeholder="06 XX XX XX XX"></div>
+<div class="fi-wrap"><label class="fl">Organisation / Cabinet</label><input class="fi" id="interv-orga" placeholder="Hôpital, association…"></div>
+<div class="fi-wrap"><label class="fl">Jours d'intervention</label><input class="fi" id="interv-jours" placeholder="ex : Lun, Mer, Ven"></div>
+<p style="font-size:11px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:var(--terra-mid);margin-bottom:8px">Droits d'accès</p>
+<div style="background:#fff;border:0.5px solid var(--brun-border);border-radius:14px;padding:0.5rem 1rem;margin-bottom:1rem">
+<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:0.5px solid #F0E8E0"><span style="font-size:13px;color:var(--brun)">Carnet de liaison</span><button class="toggle" id="acc-carnet" onclick="this.classList.toggle('off')"></button></div>
+<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:0.5px solid #F0E8E0"><span style="font-size:13px;color:var(--brun)">Agenda médical</span><button class="toggle" id="acc-agenda" onclick="this.classList.toggle('off')"></button></div>
+<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:0.5px solid #F0E8E0"><span style="font-size:13px;color:var(--brun)">Documents médicaux</span><button class="toggle off" id="acc-docs" onclick="this.classList.toggle('off')"></button></div>
+<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0"><span style="font-size:13px;color:var(--brun)">Coffre-fort</span><button class="toggle off" id="acc-coffre" onclick="this.classList.toggle('off')"></button></div>
+</div>
+<div style="display:flex;gap:8px">
+<button class="btn ghost" style="flex:1" onclick="G.closeModal('modal-interv')">Annuler</button>
+<button class="btn" style="flex:1" onclick="G.saveInterv()">Enregistrer</button>
+</div>
+</div>
+</div>
+
+<!-- Modal Document -->
+<div class="modal-bg" id="modal-doc">
+<div class="modal">
+<button class="modal-close" onclick="G.closeModal('modal-doc')">✕</button>
+<p class="modal-title">Ajouter un document</p>
+<div class="fi-wrap"><label class="fl">Nom du document *</label><input class="fi" id="doc-nom" placeholder="ex : Carte vitale, Ordonnance…"></div>
+<div class="fi-wrap"><label class="fl">Catégorie</label>
+<select class="fi" id="doc-cat">
+<option value="Identité">Identité</option>
+<option value="Médical">Médical</option>
+<option value="Juridique">Juridique</option>
+<option value="Assurance">Assurance</option>
+<option value="Coffre-fort">Coffre-fort</option>
+</select></div>
+<div class="fi-wrap"><label class="fl">Notes / Informations</label><input class="fi" id="doc-notes" placeholder="N° de pièce, date d'expiration…"></div>
+<div class="fi-wrap"><label class="fl">Fichier (photo ou PDF)</label>
+<div style="border:1.5px dashed var(--brun-border);border-radius:12px;padding:1.2rem;text-align:center;background:#fff;cursor:pointer" onclick="document.getElementById('doc-file').click()">
+<i class="ti ti-upload" style="font-size:24px;color:var(--brun-light);display:block;margin-bottom:4px"></i>
+<span style="font-size:12px;color:var(--terra-mid)">Cliquer pour sélectionner</span>
+<span id="doc-file-name" style="display:block;font-size:11px;color:var(--brun-texte);margin-top:4px"></span>
+</div>
+<input type="file" id="doc-file" accept="image/*,.pdf" style="display:none" onchange="G.setDocFile(this)">
+</div>
+<div style="display:flex;gap:8px;margin-top:0.5rem">
+<button class="btn ghost" style="flex:1" onclick="G.closeModal('modal-doc')">Annuler</button>
+<button class="btn" style="flex:1" onclick="G.saveDoc()">Enregistrer</button>
+</div>
+</div>
+</div>
+
+<!-- Modal Passage -->
+<div class="modal-bg" id="modal-passage">
+<div class="modal">
+<button class="modal-close" onclick="G.closeModal('modal-passage')">✕</button>
+<p class="modal-title">Nouveau passage</p>
+<div class="fi-wrap"><label class="fl">Intervenant *</label><input class="fi" id="pass-interv" placeholder="Nom de l'intervenant" list="interv-list-dl">
+<datalist id="interv-list-dl"></datalist></div>
+<div class="fi-wrap"><label class="fl">Date et heure</label><input class="fi" id="pass-date" type="datetime-local"></div>
+<div class="fi-wrap"><label class="fl">Durée</label><input class="fi" id="pass-duree" placeholder="ex : 45 min, 1h30"></div>
+<p style="font-size:11px;font-weight:500;letter-spacing:1.5px;text-transform:uppercase;color:var(--terra-mid);margin-bottom:8px">État général</p>
+<div id="mood-grid" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;margin-bottom:12px">
+<div class="mood-btn" data-mood="Très bien" onclick="G.selectMood(this)" style="background:#fff;border:0.5px solid var(--brun-border);border-radius:11px;padding:9px 7px;display:flex;flex-direction:column;align-items:center;gap:5px;cursor:pointer"><span style="font-size:22px">😊</span><span style="font-size:11px;color:var(--brun-texte)">Très bien</span></div>
+<div class="mood-btn" data-mood="Bien" onclick="G.selectMood(this)" style="background:#fff;border:0.5px solid var(--brun-border);border-radius:11px;padding:9px 7px;display:flex;flex-direction:column;align-items:center;gap:5px;cursor:pointer"><span style="font-size:22px">🙂</span><span style="font-size:11px;color:var(--brun-texte)">Bien</span></div>
+<div class="mood-btn" data-mood="Neutre" onclick="G.selectMood(this)" style="background:#fff;border:0.5px solid var(--brun-border);border-radius:11px;padding:9px 7px;display:flex;flex-direction:column;align-items:center;gap:5px;cursor:pointer"><span style="font-size:22px">😐</span><span style="font-size:11px;color:var(--brun-texte)">Neutre</span></div>
+<div class="mood-btn" data-mood="Fatigué" onclick="G.selectMood(this)" style="background:#fff;border:0.5px solid var(--brun-border);border-radius:11px;padding:9px 7px;display:flex;flex-direction:column;align-items:center;gap:5px;cursor:pointer"><span style="font-size:22px">😔</span><span style="font-size:11px;color:var(--brun-texte)">Fatigué</span></div>
+<div class="mood-btn" data-mood="Difficile" onclick="G.selectMood(this)" style="background:#fff;border:0.5px solid var(--brun-border);border-radius:11px;padding:9px 7px;display:flex;flex-direction:column;align-items:center;gap:5px;cursor:pointer"><span style="font-size:22px">😟</span><span style="font-size:11px;color:var(--brun-texte)">Difficile</span></div>
+<div class="mood-btn" data-mood="Urgent" onclick="G.selectMood(this)" style="background:#fff;border:0.5px solid var(--brun-border);border-radius:11px;padding:9px 7px;display:flex;flex-direction:column;align-items:center;gap:5px;cursor:pointer"><span style="font-size:22px">🚨</span><span style="font-size:11px;color:var(--brun-texte)">Urgent</span></div>
+</div>
+<div class="fi-wrap"><label class="fl">Observations</label><textarea class="fi" id="pass-notes" placeholder="Déroulé du passage, observations importantes…"></textarea></div>
+<div style="display:flex;gap:8px;margin-top:0.5rem">
+<button class="btn ghost" style="flex:1" onclick="G.closeModal('modal-passage')">Annuler</button>
+<button class="btn" style="flex:1" onclick="G.savePassage()">Enregistrer</button>
+</div>
+</div>
+</div>
+
+<!-- Modal Edit Proche -->
+<div class="modal-bg" id="modal-edit-pro">
+<div class="modal">
+<button class="modal-close" onclick="G.closeModal('modal-edit-pro')">✕</button>
+<p class="modal-title">Modifier le profil</p>
+<div style="display:flex;justify-content:center;margin-bottom:1rem">
+<div class="avatar-circle" id="edit-pro-av" onclick="document.getElementById('edit-pro-photo').click()">
+<span id="edit-pro-av-init"></span>
+<div class="cam"><i class="ti ti-camera"></i></div>
+</div>
+<input type="file" id="edit-pro-photo" accept="image/*" style="display:none" onchange="G.setEditProPhoto(this)">
+</div>
+<div class="fi-wrap"><label class="fl">Prénom</label><input class="fi" id="edit-pro-prenom"></div>
+<div class="fi-wrap"><label class="fl">Nom</label><input class="fi" id="edit-pro-nom"></div>
+<div class="fi-wrap"><label class="fl">Date de naissance</label><input class="fi" id="edit-pro-ddn" type="date"></div>
+<div class="fi-wrap"><label class="fl">Pathologie</label><input class="fi" id="edit-pro-patho"></div>
+<div class="fi-wrap"><label class="fl">N° Sécurité sociale</label><input class="fi" id="edit-pro-secu"></div>
+<div style="display:flex;gap:8px;margin-top:0.5rem">
+<button class="btn ghost" style="flex:1" onclick="G.closeModal('modal-edit-pro')">Annuler</button>
+<button class="btn" style="flex:1" onclick="G.saveEditPro()">Enregistrer</button>
+</div>
+</div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+</div>
+
+<script>
+const ROLES=[{icon:'ti-heart',title:'Aidant familial',desc:'Conjoint, enfant, proche aidant'},{icon:'ti-stethoscope',title:'Professionnel de santé',desc:'Médecin, infirmier, kiné'},{icon:'ti-home',title:'Aide à domicile',desc:'Auxiliaire de vie, association'},{icon:'ti-building',title:'Structure / EHPAD',desc:'Établissement médico-social'}];
+const CAT_COLORS={'Identité':'blue','Médical':'green','Juridique':'purple','Assurance':'orange','Coffre-fort':'red'};
+const CAT_ICONS={'Identité':'ti-id','Médical':'ti-file-text','Juridique':'ti-scale','Assurance':'ti-shield','Coffre-fort':'ti-lock'};
+const MOOD_EMOJIS={'Très bien':'😊','Bien':'🙂','Neutre':'😐','Fatigué':'😔','Difficile':'😟','Urgent':'🚨'};
+
+let DB={proche:{},user:{},rdvs:[],intervs:[],docs:[],passages:[]};
+let selectedMood='Bien';
+let tempIntervPhoto='';
+let tempDocFile='';
+let tempDocFileName='';
+
+function save(){localStorage.setItem('sereno_v1',JSON.stringify(DB));}
+function load(){const d=localStorage.getItem('sereno_v1');if(d)DB=JSON.parse(d);}
+function uid(){return Date.now().toString(36)+Math.random().toString(36).substr(2);}
+
+function go(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  const t=document.getElementById(id);if(t){t.classList.add('active');t.querySelector('.scroll')&&(t.querySelector('.scroll').scrollTop=0);}
+}
+
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
+
+function avatar(src,initials,size=40){
+  if(src)return`<div style="width:${size}px;height:${size}px;border-radius:50%;overflow:hidden;flex-shrink:0"><img src="${src}" style="width:100%;height:100%;object-fit:cover"></div>`;
+  return`<div style="width:${size}px;height:${size}px;border-radius:50%;background:var(--terra);display:flex;align-items:center;justify-content:center;font-size:${Math.round(size*0.35)}px;font-weight:500;color:#fff;flex-shrink:0">${initials}</div>`;
+}
+
+function initials(p,n){return((p||'?')[0]+(n?n[0]:'')).toUpperCase();}
+
+const G={
+  start(){
+    const has=localStorage.getItem('sereno_v1');
+    if(has){load();if(DB.proche&&DB.proche.prenom){G.renderAll();go('s-dash');}else go('s-ob1');}
+    else go('s-ob1');
+    G.renderRoles();
+  },
+  load(){load();if(DB.proche&&DB.proche.prenom){G.renderAll();go('s-dash');}else{toast('Aucune donnée trouvée');go('s-ob1');}},
+  reset(){if(confirm('Réinitialiser toutes les données Sereno ?')){localStorage.removeItem('sereno_v1');DB={proche:{},user:{},rdvs:[],intervs:[],docs:[],passages:[]};go('s-splash');}},
+
+  renderRoles(){
+    document.getElementById('roles').innerHTML=ROLES.map((r,i)=>`
+    <div class="role-card" id="role-${i}" onclick="G.selectRole(${i})" style="background:#fff;border:1px solid var(--brun-border);border-radius:14px;padding:12px 14px;margin-bottom:10px;display:flex;align-items:center;gap:12px;cursor:pointer">
+    <div style="width:40px;height:40px;border-radius:50%;background:var(--brun-bg);display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="ti ${r.icon}" style="font-size:18px;color:var(--terra)"></i></div>
+    <div style="flex:1"><p style="font-size:14px;font-weight:500;color:var(--brun);margin-bottom:2px">${r.title}</p><p style="font-size:12px;color:var(--brun-texte)">${r.desc}</p></div>
+    <div class="rdot" style="width:18px;height:18px;border-radius:50%;border:1.5px solid var(--brun-border);flex-shrink:0"></div>
+    </div>`).join('');
+    G.selectRole(0);
+  },
+  selectRole(i){
+    document.querySelectorAll('.role-card').forEach((c,j)=>{
+      c.style.border=j===i?'2px solid var(--terra)':'1px solid var(--brun-border)';
+      c.style.background=j===i?'#FEF5EF':'#fff';
+      c.querySelector('.rdot').style.borderColor=j===i?'var(--terra)':'var(--brun-border)';
+      c.querySelector('.rdot').innerHTML=j===i?'<div style="width:8px;height:8px;border-radius:50%;background:var(--terra);margin:auto;margin-top:3px"></div>':'';
+    });
+    DB.user.role=ROLES[i].title;
+  },
+  ob1Next(){go('s-ob2');},
+  updateAvInit(){
+    const p=document.getElementById('ob-prenom').value;
+    const av=document.getElementById('ob-av');
+    if(!av.querySelector('img'))document.getElementById('ob-av-init').textContent=p?p[0].toUpperCase():'?';
+  },
+  setProPhoto(inp){
+    if(!inp.files[0])return;
+    const r=new FileReader();r.onload=e=>{
+      DB.proche.photo=e.target.result;
+      const av=document.getElementById('ob-av');
+      av.innerHTML=`<img src="${e.target.result}" style="width:100%;height:100%;object-fit:cover"><div class="cam"><i class="ti ti-camera"></i></div>`;
+    };r.readAsDataURL(inp.files[0]);
+  },
+  ob2Next(){
+    const p=document.getElementById('ob-prenom').value.trim();
+    if(!p){toast('Le prénom est requis');return;}
+    DB.proche.prenom=p;
+    DB.proche.nom=document.getElementById('ob-nom').value.trim();
+    DB.proche.ddn=document.getElementById('ob-ddn').value;
+    DB.proche.patho=document.getElementById('ob-patho').value.trim();
+    DB.proche.secu=document.getElementById('ob-secu').value.trim();
+    save();go('s-ob3');
+  },
+  updateUserAvInit(){
+    const p=document.getElementById('ob-user-prenom').value;
+    const av=document.getElementById('ob-av2');
+    if(!av.querySelector('img'))document.getElementById('ob-av2-init').textContent=p?p[0].toUpperCase():'?';
+  },
+  setUserPhoto(inp){
+    if(!inp.files[0])return;
+    const r=new FileReader();r.onload=e=>{
+      DB.user.photo=e.target.result;
+      const av=document.getElementById('ob-av2');
+      av.innerHTML=`<img src="${e.target.result}" style="width:100%;height:100%;object-fit:cover"><div class="cam"><i class="ti ti-camera"></i></div>`;
+    };r.readAsDataURL(inp.files[0]);
+  },
+  ob3Next(){
+    const p=document.getElementById('ob-user-prenom').value.trim();
+    if(!p){toast('Votre prénom est requis');return;}
+    DB.user.prenom=p;
+    DB.user.nom=document.getElementById('ob-user-nom').value.trim();
+    DB.user.lien=document.getElementById('ob-lien').value.trim();
+    save();G.renderAll();go('s-dash');
+  },
+
+  renderAll(){
+    G.renderDash();G.renderAgenda();G.renderCercle();G.renderDocs();G.renderCarnet();G.renderProPills();
+  },
+
+  renderDash(){
+    const pro=DB.proche,usr=DB.user;
+    const now=new Date();
+    document.getElementById('dash-time').textContent=now.toLocaleTimeString('fr',{hour:'2-digit',minute:'2-digit'});
+    document.getElementById('dash-greet').textContent=`Bonjour ${usr.prenom||''}`;
+    document.getElementById('dash-date').textContent=now.toLocaleDateString('fr',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+    const avEl=document.getElementById('dash-pro-av');
+    avEl.innerHTML=pro.photo?`<img src="${pro.photo}" style="width:100%;height:100%;object-fit:cover">`:(pro.prenom||'?')[0].toUpperCase();
+    document.getElementById('dash-pro-name').textContent=`${pro.prenom||''} ${pro.nom||''}`.trim();
+    document.getElementById('dash-pro-patho').textContent=pro.patho||'';
+    const rdvs=DB.rdvs.filter(r=>new Date(r.date)>=now).sort((a,b)=>new Date(a.date)-new Date(b.date)).slice(0,3);
+    const rdvEl=document.getElementById('dash-rdv');
+    if(rdvs.length===0){rdvEl.innerHTML=`<p style="font-size:13px;color:var(--brun-texte);padding:0 1.4rem 0.8rem">Aucun rendez-vous à venir.</p>`;}
+    else rdvEl.innerHTML=rdvs.map(r=>{
+      const d=new Date(r.date);
+      return`<div style="background:#fff;border:0.5px solid var(--brun-border);border-radius:12px;padding:10px 13px;margin:0 1.4rem 8px;display:flex;align-items:center;gap:11px;cursor:pointer" onclick="go('s-agenda')">
+      <div style="background:var(--brun-bg);border-radius:9px;padding:6px 9px;text-align:center;min-width:42px">
+      <div style="font-size:18px;font-weight:500;color:var(--terra);line-height:1">${d.getDate()}</div>
+      <div style="font-size:10px;color:var(--terra-mid);text-transform:uppercase">${d.toLocaleString('fr',{month:'short'})}</div>
+      </div>
+      <div style="flex:1"><p style="font-size:13px;font-weight:500;color:var(--brun)">${r.titre}</p><p style="font-size:12px;color:var(--brun-texte)">${r.medecin||''}</p></div>
+      <span style="font-size:12px;color:var(--terra-mid)">${d.toLocaleTimeString('fr',{hour:'2-digit',minute:'2-digit'})}</span>
+      </div>`;
+    }).join('');
+    document.getElementById('dash-rdv-count').textContent=`${DB.rdvs.length} rendez-vous`;
+    document.getElementById('dash-interv-count').textContent=`${DB.intervs.length} intervenant${DB.intervs.length>1?'s':''}`;
+    document.getElementById('dash-docs-count').textContent=`${DB.docs.length} document${DB.docs.length>1?'s':''}`;
+    document.getElementById('dash-passages-count').textContent=`${DB.passages.length} passage${DB.passages.length>1?'s':''}`;
+  },
+
+  renderProPills(){
+    const name=DB.proche.prenom||'';
+    ['agenda-ppill','cercle-ppill','docs-ppill','carnet-ppill'].forEach(id=>{
+      const el=document.getElementById(id);if(el)el.querySelector('span').textContent=name;
+    });
+    document.querySelector('#s-profil-proche .ph-title')&&(document.querySelector('#s-profil-proche .ph-title').textContent=`Profil de ${name}`);
+    const avBig=document.getElementById('pro-av-big');
+    if(avBig){avBig.innerHTML=DB.proche.photo?`<img src="${DB.proche.photo}" style="width:100%;height:100%;object-fit:cover">`:(DB.proche.prenom||'?')[0].toUpperCase();}
+    const fn=document.getElementById('pro-fullname');if(fn)fn.textContent=`${DB.proche.prenom||''} ${DB.proche.nom||''}`.trim();
+    const pp=document.getElementById('pro-patho-disp');if(pp)pp.textContent=DB.proche.patho||'';
+    const pd=document.getElementById('pro-ddn-disp');if(pd)pd.textContent=DB.proche.ddn?new Date(DB.proche.ddn).toLocaleDateString('fr'):'—';
+    const ps=document.getElementById('pro-secu-disp');if(ps)ps.textContent=DB.proche.secu||'—';
+  },
+
+  renderAgenda(){
+    const el=document.getElementById('agenda-list');
+    if(DB.rdvs.length===0){el.innerHTML=`<div class="empty"><i class="ti ti-calendar"></i>Aucun rendez-vous pour l'instant.<br><br><button class="btn sm" onclick="G.openModal('modal-rdv')"><i class="ti ti-plus"></i> Ajouter</button></div>`;return;}
+    const sorted=[...DB.rdvs].sort((a,b)=>new Date(a.date)-new Date(b.date));
+    el.innerHTML=sorted.map(r=>{
+      const d=new Date(r.date);const past=d<new Date();
+      const cats={'Neurologie':'green','Rééducation':'orange','Généraliste':'purple','Cardiologie':'blue','Autre':'orange'};
+      return`<div style="background:#fff;border:0.5px solid var(--brun-border);border-radius:14px;padding:12px 13px;margin:0 1.4rem 10px;display:flex;gap:11px;align-items:flex-start;opacity:${past?0.6:1}">
+      <div style="background:var(--brun-bg);border-radius:9px;padding:6px 9px;text-align:center;min-width:42px;flex-shrink:0">
+      <div style="font-size:18px;font-weight:500;color:var(--terra);line-height:1">${d.getDate()}</div>
+      <div style="font-size:10px;color:var(--terra-mid);text-transform:uppercase">${d.toLocaleString('fr',{month:'short'})}</div>
+      </div>
+      <div style="flex:1">
+      <p style="font-size:13px;font-weight:500;color:var(--brun);margin-bottom:2px">${r.titre}</p>
+      ${r.medecin?`<p style="font-size:12px;color:var(--brun-texte);margin-bottom:2px">${r.medecin}</p>`:''}
+      ${r.lieu?`<p style="font-size:12px;color:var(--brun-texte);display:flex;align-items:center;gap:3px"><i class="ti ti-map-pin" style="font-size:12px"></i>${r.lieu}</p>`:''}
+      <div style="display:flex;align-items:center;gap:6px;margin-top:5px">
+      <span style="font-size:12px;color:var(--terra-mid)">${d.toLocaleTimeString('fr',{hour:'2-digit',minute:'2-digit'})}</span>
+      <span class="chip ${cats[r.cat]||'orange'}">${r.cat}</span>
+      ${past?'<span class="chip red">Passé</span>':''}
+      </div>
+      ${r.notes?`<p style="font-size:12px;color:var(--brun-texte);margin-top:6px;line-height:1.5;border-top:0.5px solid #F0E8E0;padding-top:6px">${r.notes}</p>`:''}
+      </div>
+      <div style="display:flex;flex-direction:column;gap:5px">
+      <button style="width:28px;height:28px;border-radius:50%;background:var(--brun-bg);border:none;display:flex;align-items:center;justify-content:center;cursor:pointer" onclick="G.editRdv('${r.id}')"><i class="ti ti-edit" style="font-size:13px;color:var(--terra)"></i></button>
+      <button style="width:28px;height:28px;border-radius:50%;background:#FCF0F0;border:none;display:flex;align-items:center;justify-content:center;cursor:pointer" onclick="G.deleteRdv('${r.id}')"><i class="ti ti-trash" style="font-size:13px;color:#C0392B"></i></button>
+      </div>
+      </div>`;
+    }).join('');
+    el.innerHTML+=`<div style="padding:0 1.4rem 1rem"><button class="btn" onclick="G.openModal('modal-rdv')"><i class="ti ti-plus"></i> Ajouter un rendez-vous</button></div>`;
+  },
+
+  openModal(id){
+    if(id==='modal-rdv'){
+      document.getElementById('modal-rdv-title').textContent='Ajouter un RDV';
+      document.getElementById('rdv-edit-id').value='';
+      ['rdv-titre','rdv-medecin','rdv-lieu','rdv-notes'].forEach(f=>document.getElementById(f).value='');
+      document.getElementById('rdv-date').value='';document.getElementById('rdv-heure').value='';
+      document.getElementById('rdv-cat').value='Neurologie';
+    }
+    if(id==='modal-interv'){
+      document.getElementById('modal-interv-title').textContent='Ajouter un intervenant';
+      document.getElementById('interv-edit-id').value='';
+      ['interv-prenom','interv-nom','interv-role','interv-tel','interv-orga','interv-jours'].forEach(f=>document.getElementById(f).value='');
+      document.getElementById('interv-cat').value='Famille';
+      document.getElementById('interv-av').innerHTML='<span id="interv-av-init">?</span><div class="cam"><i class="ti ti-camera"></i></div>';
+      tempIntervPhoto='';
+      ['acc-carnet','acc-agenda'].forEach(id=>{const t=document.getElementById(id);t.classList.remove('off');});
+      ['acc-docs','acc-coffre'].forEach(id=>{const t=document.getElementById(id);t.classList.add('off');});
+    }
+    if(id==='modal-doc'){
+      ['doc-nom','doc-notes'].forEach(f=>document.getElementById(f).value='');
+      document.getElementById('doc-cat').value='Identité';
+      document.getElementById('doc-file-name').textContent='';
+      tempDocFile='';tempDocFileName='';
+    }
+    if(id==='modal-passage'){
+      document.getElementById('pass-interv').value='';
+      const now=new Date();now.setMinutes(0);
+      document.getElementById('pass-date').value=now.toISOString().slice(0,16);
+      document.getElementById('pass-duree').value='';
+      document.getElementById('pass-notes').value='';
+      selectedMood='Bien';
+      document.querySelectorAll('.mood-btn').forEach(b=>{b.style.border='0.5px solid var(--brun-border)';b.style.background='#fff';});
+      const dl=document.getElementById('interv-list-dl');
+      dl.innerHTML=DB.intervs.map(i=>`<option value="${i.prenom}${i.nom?' '+i.nom:''}">`).join('');
+    }
+    document.getElementById(id).classList.add('open');
+  },
+  closeModal(id){document.getElementById(id).classList.remove('open');},
+
+  saveRdv(){
+    const titre=document.getElementById('rdv-titre').value.trim();
+    const date=document.getElementById('rdv-date').value;
+    const heure=document.getElementById('rdv-heure').value;
+    if(!titre||!date||!heure){toast('Titre, date et heure sont requis');return;}
+    const editId=document.getElementById('rdv-edit-id').value;
+    const obj={id:editId||uid(),titre,medecin:document.getElementById('rdv-medecin').value.trim(),date:`${date}T${heure}`,lieu:document.getElementById('rdv-lieu').value.trim(),cat:document.getElementById('rdv-cat').value,notes:document.getElementById('rdv-notes').value.trim()};
+    if(editId){const i=DB.rdvs.findIndex(r=>r.id===editId);if(i>-1)DB.rdvs[i]=obj;}
+    else DB.rdvs.push(obj);
+    save();G.renderAgenda();G.renderDash();G.closeModal('modal-rdv');toast('RDV enregistré ✓');
+  },
+  editRdv(id){
+    const r=DB.rdvs.find(x=>x.id===id);if(!r)return;
+    document.getElementById('modal-rdv-title').textContent='Modifier le RDV';
+    document.getElementById('rdv-edit-id').value=id;
+    document.getElementById('rdv-titre').value=r.titre;
+    document.getElementById('rdv-medecin').value=r.medecin||'';
+    document.getElementById('rdv-date').value=r.date.slice(0,10);
+    document.getElementById('rdv-heure').value=r.date.slice(11,16);
+    document.getElementById('rdv-lieu').value=r.lieu||'';
+    document.getElementById('rdv-cat').value=r.cat||'Autre';
+    document.getElementById('rdv-notes').value=r.notes||'';
+    document.getElementById('modal-rdv').classList.add('open');
+  },
+  deleteRdv(id){if(confirm('Supprimer ce rendez-vous ?')){DB.rdvs=DB.rdvs.filter(r=>r.id!==id);save();G.renderAgenda();G.renderDash();toast('RDV supprimé');}},
+
+  renderCercle(){
+    const el=document.getElementById('cercle-list');
+    if(DB.intervs.length===0){el.innerHTML=`<div class="empty"><i class="ti ti-users"></i>Aucun intervenant pour l'instant.<br><br><button class="btn sm" onclick="G.openModal('modal-interv')"><i class="ti ti-plus"></i> Ajouter</button></div>`;return;}
+    const cats=['Famille','Médical','Aide à domicile','Autre'];
+    let html='';
+    cats.forEach(cat=>{
+      const items=DB.intervs.filter(i=>i.cat===cat);
+      if(items.length===0)return;
+      html+=`<div class="cat-hdr"><span class="cat-lbl">${cat}</span><div class="cat-line"></div></div>`;
+      items.forEach(i=>{
+        const init=initials(i.prenom,i.nom);
+        const av=i.photo?`<div style="width:40px;height:40px;border-radius:50%;overflow:hidden;flex-shrink:0"><img src="${i.photo}" style="width:100%;height:100%;object-fit:cover"></div>`:`<div style="width:40px;height:40px;border-radius:50%;background:var(--terra);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:500;color:#fff;flex-shrink:0">${init}</div>`;
+        html+=`<div style="background:#fff;border:0.5px solid var(--brun-border);border-radius:14px;padding:11px 13px;margin:0 1.4rem 8px;display:flex;align-items:center;gap:11px">
+        ${av}
+        <div style="flex:1">
+        <p style="font-size:13px;font-weight:500;color:var(--brun);margin-bottom:2px">${i.prenom}${i.nom?' '+i.nom:''}</p>
+        <p style="font-size:12px;color:var(--brun-texte)">${i.role}</p>
+        ${i.tel?`<p style="font-size:11px;color:var(--terra-mid);margin-top:2px">${i.tel}</p>`:''}
+        </div>
+        <div style="display:flex;gap:5px">
+        <button style="width:30px;height:30px;border-radius:50%;background:var(--brun-bg);border:none;display:flex;align-items:center;justify-content:center;cursor:pointer" onclick="G.editInterv('${i.id}')"><i class="ti ti-edit" style="font-size:13px;color:var(--terra)"></i></button>
+        <button style="width:30px;height:30px;border-radius:50%;background:#FCF0F0;border:none;display:flex;align-items:center;justify-content:center;cursor:pointer" onclick="G.deleteInterv('${i.id}')"><i class="ti ti-trash" style="font-size:13px;color:#C0392B"></i></button>
+        </div>
+        </div>`;
+      });
+    });
+    html+=`<div style="padding:0.5rem 1.4rem 1rem"><button class="btn" onclick="G.openModal('modal-interv')"><i class="ti ti-user-plus"></i> Inviter un intervenant</button></div>`;
+    el.innerHTML=html;
+  },
+  updateIntervAvInit(){
+    const p=document.getElementById('interv-prenom').value;
+    const av=document.getElementById('interv-av');
+    if(!av.querySelector('img'))document.getElementById('interv-av-init').textContent=p?p[0].toUpperCase():'?';
+  },
+  setIntervPhoto(inp){
+    if(!inp.files[0])return;
+    const r=new FileReader();r.onload=e=>{
+      tempIntervPhoto=e.target.result;
+      document.getElementById('interv-av').innerHTML=`<img src="${e.target.result}" style="width:100%;height:100%;object-fit:cover"><div class="cam"><i class="ti ti-camera"></i></div>`;
+    };r.readAsDataURL(inp.files[0]);
+  },
+  saveInterv(){
+    const prenom=document.getElementById('interv-prenom').value.trim();
+    const role=document.getElementById('interv-role').value.trim();
+    if(!prenom||!role){toast('Prénom et rôle sont requis');return;}
+    const editId=document.getElementById('interv-edit-id').value;
+    const obj={id:editId||uid(),prenom,nom:document.getElementById('interv-nom').value.trim(),role,cat:document.getElementById('interv-cat').value,tel:document.getElementById('interv-tel').value.trim(),orga:document.getElementById('interv-orga').value.trim(),jours:document.getElementById('interv-jours').value.trim(),photo:tempIntervPhoto||'',acces:{carnet:!document.getElementById('acc-carnet').classList.contains('off'),agenda:!document.getElementById('acc-agenda').classList.contains('off'),docs:!document.getElementById('acc-docs').classList.contains('off'),coffre:!document.getElementById('acc-coffre').classList.contains('off')}};
+    if(editId){const i=DB.intervs.findIndex(x=>x.id===editId);if(i>-1){obj.photo=obj.photo||DB.intervs[i].photo;DB.intervs[i]=obj;}}
+    else DB.intervs.push(obj);
+    save();G.renderCercle();G.renderDash();G.closeModal('modal-interv');toast('Intervenant enregistré ✓');
+  },
+  editInterv(id){
+    const i=DB.intervs.find(x=>x.id===id);if(!i)return;
+    document.getElementById('modal-interv-title').textContent='Modifier l\'intervenant';
+    document.getElementById('interv-edit-id').value=id;
+    document.getElementById('interv-prenom').value=i.prenom;
+    document.getElementById('interv-nom').value=i.nom||'';
+    document.getElementById('interv-role').value=i.role;
+    document.getElementById('interv-cat').value=i.cat||'Autre';
+    document.getElementById('interv-tel').value=i.tel||'';
+    document.getElementById('interv-orga').value=i.orga||'';
+    document.getElementById('interv-jours').value=i.jours||'';
+    tempIntervPhoto=i.photo||'';
+    const av=document.getElementById('interv-av');
+    av.innerHTML=i.photo?`<img src="${i.photo}" style="width:100%;height:100%;object-fit:cover"><div class="cam"><i class="ti ti-camera"></i></div>`:`<span id="interv-av-init">${initials(i.prenom,i.nom)}</span><div class="cam"><i class="ti ti-camera"></i></div>`;
+    if(i.acces){['carnet','agenda','docs','coffre'].forEach(k=>{const t=document.getElementById('acc-'+k);i.acces[k]?t.classList.remove('off'):t.classList.add('off');});}
+    document.getElementById('modal-interv').classList.add('open');
+  },
+  deleteInterv(id){if(confirm('Retirer cet intervenant ?')){DB.intervs=DB.intervs.filter(i=>i.id!==id);save();G.renderCercle();G.renderDash();toast('Intervenant retiré');}},
+
+  setDocFile(inp){
+    if(!inp.files[0])return;
+    const r=new FileReader();
+    tempDocFileName=inp.files[0].name;
+    r.onload=e=>{tempDocFile=e.target.result;document.getElementById('doc-file-name').textContent=tempDocFileName;};
+    r.readAsDataURL(inp.files[0]);
+  },
+  saveDoc(){
+    const nom=document.getElementById('doc-nom').value.trim();
+    if(!nom){toast('Le nom du document est requis');return;}
+    const obj={id:uid(),nom,cat:document.getElementById('doc-cat').value,notes:document.getElementById('doc-notes').value.trim(),file:tempDocFile,fileName:tempDocFileName,date:new Date().toISOString()};
+    DB.docs.push(obj);save();G.renderDocs();G.renderDash();G.closeModal('modal-doc');toast('Document ajouté ✓');
+  },
+  renderDocs(){
+    const el=document.getElementById('docs-cats');
+    if(DB.docs.length===0){el.innerHTML=`<div class="empty"><i class="ti ti-file"></i>Aucun document pour l'instant.<br><br><button class="btn sm" onclick="G.openModal('modal-doc')"><i class="ti ti-upload"></i> Ajouter</button></div>`;return;}
+    const cats=['Identité','Médical','Juridique','Assurance','Coffre-fort'];
+    let html='';
+    cats.forEach(cat=>{
+      const items=DB.docs.filter(d=>d.cat===cat);if(items.length===0)return;
+      html+=`<span class="sl">${cat}</span>`;
+      items.forEach(d=>{
+        const iconCls=CAT_ICONS[cat]||'ti-file';
+        const chipCls=CAT_COLORS[cat]||'orange';
+        const isImg=d.file&&d.file.startsWith('data:image');
+        html+=`<div style="background:#fff;border:0.5px solid var(--brun-border);border-radius:14px;padding:11px 13px;margin:0 1.4rem 8px;display:flex;align-items:center;gap:11px">
+        ${isImg?`<div style="width:40px;height:40px;border-radius:10px;overflow:hidden;flex-shrink:0"><img src="${d.file}" style="width:100%;height:100%;object-fit:cover"></div>`:`<div style="width:40px;height:40px;border-radius:10px;background:var(--brun-bg);display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="ti ${iconCls}" style="font-size:18px;color:var(--terra)"></i></div>`}
+        <div style="flex:1">
+        <p style="font-size:13px;font-weight:500;color:var(--brun);margin-bottom:2px">${d.nom}</p>
+        ${d.notes?`<p style="font-size:11px;color:var(--brun-texte)">${d.notes}</p>`:''}
+        <div style="display:flex;align-items:center;gap:6px;margin-top:3px">
+        <span class="chip ${chipCls}">${cat}</span>
+        <span style="font-size:10px;color:var(--brun-light)">${new Date(d.date).toLocaleDateString('fr')}</span>
+        </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:5px">
+        ${d.file?`<a href="${d.file}" download="${d.fileName||d.nom}" style="width:30px;height:30px;border-radius:50%;background:var(--brun-bg);display:flex;align-items:center;justify-content:center;text-decoration:none"><i class="ti ti-download" style="font-size:13px;color:var(--terra)"></i></a>`:''}
+        <button style="width:30px;height:30px;border-radius:50%;background:#FCF0F0;border:none;display:flex;align-items:center;justify-content:center;cursor:pointer" onclick="G.deleteDoc('${d.id}')"><i class="ti ti-trash" style="font-size:13px;color:#C0392B"></i></button>
+        </div>
+        </div>`;
+      });
+    });
+    html+=`<div style="padding:0.5rem 1.4rem 1rem"><button class="btn" onclick="G.openModal('modal-doc')"><i class="ti ti-upload"></i> Ajouter un document</button></div>`;
+    el.innerHTML=html;
+  },
+  deleteDoc(id){if(confirm('Supprimer ce document ?')){DB.docs=DB.docs.filter(d=>d.id!==id);save();G.renderDocs();G.renderDash();toast('Document supprimé');}},
+
+  selectMood(btn){
+    selectedMood=btn.dataset.mood;
+    document.querySelectorAll('.mood-btn').forEach(b=>{b.style.border='0.5px solid var(--brun-border)';b.style.background='#fff';b.querySelector('span:last-child').style.color='var(--brun-texte)';});
+    btn.style.border='1.5px solid var(--terra)';btn.style.background='#FEF5EF';btn.querySelector('span:last-child').style.color='var(--terra)';
+  },
+  savePassage(){
+    const interv=document.getElementById('pass-interv').value.trim();
+    if(!interv){toast('L\'intervenant est requis');return;}
+    const obj={id:uid(),interv,date:document.getElementById('pass-date').value,duree:document.getElementById('pass-duree').value.trim(),mood:selectedMood,notes:document.getElementById('pass-notes').value.trim()};
+    DB.passages.push(obj);save();G.renderCarnet();G.renderDash();G.closeModal('modal-passage');toast('Passage enregistré ✓');
+  },
+  renderCarnet(){
+    const el=document.getElementById('carnet-list');
+    if(DB.passages.length===0){el.innerHTML=`<div class="empty"><i class="ti ti-notebook"></i>Aucun passage noté pour l'instant.<br><br><button class="btn sm" onclick="G.openModal('modal-passage')"><i class="ti ti-plus"></i> Ajouter</button></div>`;return;}
+    const sorted=[...DB.passages].sort((a,b)=>new Date(b.date)-new Date(a.date));
+    const moodCols={'Très bien':'green','Bien':'green','Neutre':'orange','Fatigué':'orange','Difficile':'red','Urgent':'red'};
+    let html='';let lastDay='';
+    sorted.forEach(p=>{
+      const d=new Date(p.date);
+      const day=d.toLocaleDateString('fr',{weekday:'long',day:'numeric',month:'long'});
+      if(day!==lastDay){
+        html+=`<div style="font-size:12px;font-weight:500;color:var(--brun);padding:0.5rem 1.4rem 0.3rem;display:flex;align-items:center;gap:8px">${day}<div style="flex:1;height:0.5px;background:var(--brun-border)"></div></div>`;
+        lastDay=day;
+      }
+      const interv=DB.intervs.find(i=>`${i.prenom}${i.nom?' '+i.nom:''}`===p.interv)||null;
+      const avHtml=interv&&interv.photo?`<div style="width:36px;height:36px;border-radius:50%;overflow:hidden;flex-shrink:0"><img src="${interv.photo}" style="width:100%;height:100%;object-fit:cover"></div>`:`<div style="width:36px;height:36px;border-radius:50%;background:var(--terra);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500;color:#fff;flex-shrink:0">${(p.interv||'?')[0].toUpperCase()}</div>`;
+      html+=`<div style="background:#fff;border:0.5px solid var(--brun-border);border-radius:14px;margin:0 1.4rem 10px;overflow:hidden">
+      <div style="padding:10px 13px;display:flex;align-items:center;gap:10px;border-bottom:0.5px solid #F0E8E0">
+      ${avHtml}
+      <div style="flex:1"><p style="font-size:13px;font-weight:500;color:var(--brun);margin-bottom:1px">${p.interv}</p>${interv?`<p style="font-size:11px;color:var(--brun-texte)">${interv.role}</p>`:''}</div>
+      <span style="font-size:12px;color:var(--terra-mid)">${d.toLocaleTimeString('fr',{hour:'2-digit',minute:'2-digit'})}</span>
+      </div>
+      <div style="padding:10px 13px">
+      ${p.notes?`<p style="font-size:13px;color:var(--brun);line-height:1.6;margin-bottom:8px">${p.notes}</p>`:''}
+      <div style="display:flex;align-items:center;gap:6px">
+      <span class="chip ${moodCols[p.mood]||'green'}">${MOOD_EMOJIS[p.mood]||''} ${p.mood||''}</span>
+      ${p.duree?`<span style="font-size:11px;color:var(--terra-mid);display:flex;align-items:center;gap:3px"><i class="ti ti-clock" style="font-size:11px"></i>${p.duree}</span>`:''}
+      <button style="margin-left:auto;width:26px;height:26px;border-radius:50%;background:#FCF0F0;border:none;display:flex;align-items:center;justify-content:center;cursor:pointer" onclick="G.deletePassage('${p.id}')"><i class="ti ti-trash" style="font-size:12px;color:#C0392B"></i></button>
+      </div>
+      </div>
+      </div>`;
+    });
+    html+=`<div style="padding:0.5rem 1.4rem 1rem"><button class="btn" onclick="G.openModal('modal-passage')"><i class="ti ti-plus"></i> Noter un passage</button></div>`;
+    el.innerHTML=html;
+  },
+  deletePassage(id){if(confirm('Supprimer ce passage ?')){DB.passages=DB.passages.filter(p=>p.id!==id);save();G.renderCarnet();G.renderDash();toast('Passage supprimé');}},
+
+  editPro(){
+    document.getElementById('edit-pro-prenom').value=DB.proche.prenom||'';
+    document.getElementById('edit-pro-nom').value=DB.proche.nom||'';
+    document.getElementById('edit-pro-ddn').value=DB.proche.ddn||'';
+    document.getElementById('edit-pro-patho').value=DB.proche.patho||'';
+    document.getElementById('edit-pro-secu').value=DB.proche.secu||'';
+    const av=document.getElementById('edit-pro-av');
+    av.innerHTML=DB.proche.photo?`<img src="${DB.proche.photo}" style="width:100%;height:100%;object-fit:cover"><div class="cam"><i class="ti ti-camera"></i></div>`:`<span id="edit-pro-av-init">${(DB.proche.prenom||'?')[0].toUpperCase()}</span><div class="cam"><i class="ti ti-camera"></i></div>`;
+    document.getElementById('modal-edit-pro').classList.add('open');
+  },
+  setEditProPhoto(inp){
+    if(!inp.files[0])return;
+    const r=new FileReader();r.onload=e=>{DB.proche.photo=e.target.result;document.getElementById('edit-pro-av').innerHTML=`<img src="${e.target.result}" style="width:100%;height:100%;object-fit:cover"><div class="cam"><i class="ti ti-camera"></i></div>`;};
+    r.readAsDataURL(inp.files[0]);
+  },
+  saveEditPro(){
+    DB.proche.prenom=document.getElementById('edit-pro-prenom').value.trim();
+    DB.proche.nom=document.getElementById('edit-pro-nom').value.trim();
+    DB.proche.ddn=document.getElementById('edit-pro-ddn').value;
+    DB.proche.patho=document.getElementById('edit-pro-patho').value.trim();
+    DB.proche.secu=document.getElementById('edit-pro-secu').value.trim();
+    save();G.renderAll();G.closeModal('modal-edit-pro');toast('Profil mis à jour ✓');
+  },
+};
+
+// Init
+setInterval(()=>{
+  const t=document.getElementById('dash-time');
+  if(t)t.textContent=new Date().toLocaleTimeString('fr',{hour:'2-digit',minute:'2-digit'});
+},30000);
+
+load();
+if(DB.proche&&DB.proche.prenom){G.renderAll();go('s-dash');}
+// else: reste sur splash
+</script>
+</body>
+</html>
