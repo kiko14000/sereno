@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sereno Pro — Pitch</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:#F0EAE2;font-family:"DM Sans",sans-serif;padding:3rem 1.5rem;}
+.pitch{max-width:720px;margin:0 auto;}
+.cover{text-align:center;padding:3.5rem 2rem;margin-bottom:2.5rem;background:#3D2B1F;border-radius:20px;}
+.cover-eyebrow{font-size:11px;letter-spacing:3px;text-transform:uppercase;color:#C4805A;margin-bottom:1rem;}
+.cover-name{font-family:"Cormorant Garamond",serif;font-weight:300;font-size:42px;letter-spacing:7px;color:#FAF6F1;}
+.cover-pro{font-size:14px;letter-spacing:4px;text-transform:uppercase;color:#C4805A;margin-bottom:1.5rem;}
+.cover-hook{font-family:"Cormorant Garamond",serif;font-size:26px;color:#FAF6F1;line-height:1.4;margin-bottom:8px;}
+.cover-sub{font-size:14px;color:#E8C4A8;line-height:1.7;}
+.divider{height:0.5px;background:#D4C4B8;margin:2.5rem 0;}
+.block{margin-bottom:2rem;}
+.block-label{font-size:11px;font-weight:500;letter-spacing:2.5px;text-transform:uppercase;color:#B07C60;margin-bottom:10px;}
+.block-title{font-family:"Cormorant Garamond",serif;font-size:24px;color:#3D2B1F;margin-bottom:10px;}
+.block-text{font-size:14px;color:#7A6055;line-height:1.75;}
+.stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:2rem;}
+.stat-card{background:#FAF6F1;border-radius:14px;padding:1.2rem;border:0.5px solid #E0D5CA;}
+.stat-num{font-family:"Cormorant Garamond",serif;font-size:34px;color:#C4805A;font-weight:400;line-height:1;}
+.stat-label{font-size:12px;color:#7A6055;margin-top:5px;line-height:1.4;}
+.diff-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:2rem;}
+.diff-card{background:#FAF6F1;border-radius:14px;padding:1.2rem;border:0.5px solid #E0D5CA;}
+.diff-icon{width:40px;height:40px;border-radius:10px;background:#F5EDE3;display:flex;align-items:center;justify-content:center;margin-bottom:10px;}
+.diff-icon i{font-size:20px;color:#C4805A;}
+.diff-title{font-size:14px;font-weight:500;color:#3D2B1F;margin-bottom:5px;}
+.diff-text{font-size:13px;color:#7A6055;line-height:1.6;}
+.module-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:2rem;}
+.module-card{background:#FAF6F1;border-radius:12px;padding:1rem;border:0.5px solid #E0D5CA;display:flex;align-items:flex-start;gap:10px;}
+.module-dot{width:8px;height:8px;border-radius:50%;background:#C4805A;flex-shrink:0;margin-top:5px;}
+.module-title{font-size:13px;font-weight:500;color:#3D2B1F;margin-bottom:2px;}
+.module-sub{font-size:12px;color:#7A6055;}
+.cible-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:2rem;}
+.cible-card{background:#FAF6F1;border-radius:14px;padding:1.2rem;border:0.5px solid #E0D5CA;text-align:center;}
+.cible-icon{width:44px;height:44px;border-radius:50%;background:#F5EDE3;display:flex;align-items:center;justify-content:center;margin:0 auto 10px;}
+.cible-icon i{font-size:20px;color:#C4805A;}
+.cible-title{font-size:14px;font-weight:500;color:#3D2B1F;margin-bottom:4px;}
+.cible-sub{font-size:12px;color:#7A6055;line-height:1.5;}
+.eco-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:2rem;}
+.eco-card{border-radius:14px;padding:1.4rem;border:0.5px solid #E0D5CA;}
+.eco-free{background:#F5EDE3;}
+.eco-pro{background:#3D2B1F;}
+.eco-ent{background:#C4805A;}
+.eco-label{font-size:11px;font-weight:500;letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;}
+.eco-free .eco-label{color:#B07C60;}
+.eco-pro .eco-label{color:#E8C4A8;}
+.eco-ent .eco-label{color:rgba(250,246,241,0.8);}
+.eco-price{font-family:"Cormorant Garamond",serif;font-size:26px;font-weight:400;line-height:1;margin-bottom:4px;}
+.eco-free .eco-price{color:#C4805A;}
+.eco-pro .eco-price,.eco-ent .eco-price{color:#FAF6F1;}
+.eco-desc{font-size:12px;line-height:1.5;}
+.eco-free .eco-desc{color:#7A6055;}
+.eco-pro .eco-desc{color:#E8C4A8;}
+.eco-ent .eco-desc{color:rgba(250,246,241,0.85);}
+.eco-features{margin-top:10px;display:flex;flex-direction:column;gap:5px;}
+.eco-feature{font-size:11px;display:flex;align-items:center;gap:5px;}
+.eco-free .eco-feature{color:#7A6055;}
+.eco-pro .eco-feature{color:#E8C4A8;}
+.eco-ent .eco-feature{color:rgba(250,246,241,0.85);}
+.eco-feature i{font-size:13px;color:#6B9E8A;}
+.mvp-steps{display:flex;flex-direction:column;gap:10px;margin-bottom:2rem;}
+.mvp-step{display:flex;align-items:flex-start;gap:14px;background:#FAF6F1;border-radius:12px;padding:12px 16px;border:0.5px solid #E0D5CA;}
+.step-num{width:28px;height:28px;border-radius:50%;background:#C4805A;color:#FAF6F1;font-size:12px;font-weight:500;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;}
+.step-title{font-size:14px;font-weight:500;color:#3D2B1F;margin-bottom:3px;}
+.step-desc{font-size:12px;color:#7A6055;}
+.closing{background:#3D2B1F;border-radius:16px;padding:2rem;text-align:center;}
+.closing-title{font-family:"Cormorant Garamond",serif;font-size:26px;color:#FAF6F1;margin-bottom:10px;}
+.closing-text{font-size:13px;color:#E8C4A8;line-height:1.75;}
+.footer{margin-top:2rem;text-align:center;font-size:11px;color:#B07C60;letter-spacing:1px;}
+</style>
+</head>
+<body>
+<div class="pitch">
+
+<div class="cover">
+<p class="cover-eyebrow">Présentation produit</p>
+<div style="display:flex;align-items:center;justify-content:center;gap:14px;margin-bottom:0.5rem">
+<svg width="48" height="48" viewBox="0 0 56 56" fill="none"><circle cx="28" cy="28" r="26.5" stroke="#C4805A" stroke-width="1"/><g transform="translate(28,30) scale(0.88)"><line x1="0" y1="14" x2="0" y2="-18" stroke="#FAF6F1" stroke-width="1.2" stroke-linecap="round"/><line x1="0" y1="6" x2="-13" y2="-2" stroke="#FAF6F1" stroke-width="1" stroke-linecap="round"/><line x1="0" y1="6" x2="13" y2="-2" stroke="#FAF6F1" stroke-width="1" stroke-linecap="round"/><line x1="0" y1="-1" x2="-10" y2="-8" stroke="#FAF6F1" stroke-width="0.9" stroke-linecap="round"/><line x1="0" y1="-1" x2="10" y2="-8" stroke="#FAF6F1" stroke-width="0.9" stroke-linecap="round"/><line x1="0" y1="-8" x2="-7" y2="-14" stroke="#FAF6F1" stroke-width="0.8" stroke-linecap="round"/><line x1="0" y1="-8" x2="7" y2="-14" stroke="#FAF6F1" stroke-width="0.8" stroke-linecap="round"/><line x1="0" y1="-14" x2="-4" y2="-18" stroke="#FAF6F1" stroke-width="0.7" stroke-linecap="round"/><line x1="0" y1="-14" x2="4" y2="-18" stroke="#FAF6F1" stroke-width="0.7" stroke-linecap="round"/><line x1="-13" y1="-2" x2="-18" y2="-5" stroke="#C4805A" stroke-width="0.7" stroke-linecap="round"/><line x1="-13" y1="-2" x2="-16" y2="1" stroke="#C4805A" stroke-width="0.7" stroke-linecap="round"/><line x1="13" y1="-2" x2="18" y2="-5" stroke="#C4805A" stroke-width="0.7" stroke-linecap="round"/><line x1="13" y1="-2" x2="16" y2="1" stroke="#C4805A" stroke-width="0.7" stroke-linecap="round"/><line x1="-10" y1="-8" x2="-14" y2="-11" stroke="#C4805A" stroke-width="0.7" stroke-linecap="round"/><line x1="-10" y1="-8" x2="-13" y2="-5" stroke="#C4805A" stroke-width="0.7" stroke-linecap="round"/><line x1="10" y1="-8" x2="14" y2="-11" stroke="#C4805A" stroke-width="0.7" stroke-linecap="round"/><line x1="10" y1="-8" x2="13" y2="-5" stroke="#C4805A" stroke-width="0.7" stroke-linecap="round"/></g></svg>
+<div style="text-align:left"><p class="cover-name">sereno</p><p class="cover-pro">Pro</p></div>
+</div>
+<p class="cover-hook">La plateforme de coordination des soins pour les structures médico-sociales</p>
+<p class="cover-sub">Dashboard multi-résidents · Suivi en temps réel · Lien famille-structure en continu</p>
+</div>
+
+<div class="divider"></div>
+
+<div class="block">
+<p class="block-label">Le problème</p>
+<p class="block-title">Les EHPAD gèrent des dizaines de résidents avec des outils des années 2000.</p>
+<p class="block-text">Cahiers de liaison papier, tableurs Excel, logiciels cloisonnés, transmissions qui se perdent entre équipes… Le personnel soignant passe un temps considérable à chercher l'information plutôt qu'à soigner. Et les familles sont maintenues à l'écart du quotidien de leur proche.</p>
+</div>
+
+<div class="stat-row">
+<div class="stat-card"><p class="stat-num">7 500</p><p class="stat-label">EHPAD en France</p></div>
+<div class="stat-card"><p class="stat-num">600k</p><p class="stat-label">résidents hébergés</p></div>
+<div class="stat-card"><p class="stat-num">40%</p><p class="stat-label">du temps soignant perdu en coordination</p></div>
+<div class="stat-card"><p class="stat-num">73%</p><p class="stat-label">des familles insatisfaites du lien avec la structure</p></div>
+</div>
+
+<div class="block">
+<p class="block-label">La solution</p>
+<p class="block-title">Sereno Pro — une interface unifiée pour toute la structure.</p>
+<p class="block-text">Un dashboard multi-résidents avec vue d'ensemble instantanée, des alertes automatiques, et un fil continu entre l'équipe soignante et les familles — le tout dans l'identité visuelle Sereno, chaleureuse et accessible.</p>
+</div>
+
+<div class="diff-grid">
+<div class="diff-card"><div class="diff-icon"><i class="ti ti-layout-grid"></i></div><p class="diff-title">Dashboard multi-résidents</p><p class="diff-text">Vue grille ou liste de tous les résidents avec statut en temps réel — dernier passage, alertes, RDV du jour. Un coup d'œil suffit.</p></div>
+<div class="diff-card"><div class="diff-icon"><i class="ti ti-bell"></i></div><p class="diff-title">Alertes intelligentes</p><p class="diff-text">Aucun passage depuis 48h, médicaments non pris, RDV non confirmé — le système alerte automatiquement le responsable.</p></div>
+<div class="diff-card"><div class="diff-icon"><i class="ti ti-users"></i></div><p class="diff-title">Lien famille en temps réel</p><p class="diff-text">Les familles accèdent via Sereno Family à tout ce que l'équipe note. Plus d'appels anxieux — le lien est permanent et transparent.</p></div>
+<div class="diff-card"><div class="diff-icon"><i class="ti ti-chart-bar"></i></div><p class="diff-title">Rapports et exports</p><p class="diff-text">Rapports d'activité, taux de passages, bilans par résident — exportables pour les contrôles ARS et les réunions de direction.</p></div>
+</div>
+
+<div class="block">
+<p class="block-label">Fonctionnalités clés</p>
+<p class="block-title">Tout ce dont une structure a besoin.</p>
+</div>
+
+<div class="module-grid">
+<div class="module-card"><div class="module-dot"></div><div><p class="module-title">Dashboard résidents</p><p class="module-sub">Grille / liste, filtres par aile</p></div></div>
+<div class="module-card"><div class="module-dot"></div><div><p class="module-title">Profil résident complet</p><p class="module-sub">Synthèse médicale, contacts famille</p></div></div>
+<div class="module-card"><div class="module-dot"></div><div><p class="module-title">Carnet de liaison digital</p><p class="module-sub">Passages horodatés, transmissions</p></div></div>
+<div class="module-card"><div class="module-dot"></div><div><p class="module-title">Agenda médical</p><p class="module-sub">RDV, rappels, suivi par résident</p></div></div>
+<div class="module-card"><div class="module-dot"></div><div><p class="module-title">Alertes automatiques</p><p class="module-sub">Passages manqués, médicaments</p></div></div>
+<div class="module-card"><div class="module-dot"></div><div><p class="module-title">Gestion équipe soignante</p><p class="module-sub">Droits d'accès par rôle</p></div></div>
+<div class="module-card"><div class="module-dot"></div><div><p class="module-title">Documents et coffre-fort</p><p class="module-sub">CNI, tutelle, ordonnances</p></div></div>
+<div class="module-card"><div class="module-dot"></div><div><p class="module-title">Journal de santé</p><p class="module-sub">Humeur, poids, tension, mobilité</p></div></div>
+<div class="module-card"><div class="module-dot"></div><div><p class="module-title">Rapports et exports</p><p class="module-sub">ARS, direction, famille</p></div></div>
+</div>
+
+<div class="block">
+<p class="block-label">Clients cibles</p>
+<p class="block-title">Trois segments B2B prioritaires.</p>
+</div>
+
+<div class="cible-row">
+<div class="cible-card"><div class="cible-icon"><i class="ti ti-building"></i></div><p class="cible-title">EHPAD publics et privés</p><p class="cible-sub">7 500 établissements en France · 600 000 résidents · Abonnement par résident/mois</p></div>
+<div class="cible-card"><div class="cible-icon"><i class="ti ti-home"></i></div><p class="cible-title">Services d'aide à domicile</p><p class="cible-sub">SAAD, associations mandataires · Coordination multi-intervenants · Abonnement par bénéficiaire</p></div>
+<div class="cible-card"><div class="cible-icon"><i class="ti ti-heart"></i></div><p class="cible-title">Structures de soins palliatifs</p><p class="cible-sub">HAD, USP · Coordination famille-soignants en période critique · Accès prioritaire</p></div>
+</div>
+
+<div class="block">
+<p class="block-label">Modèle économique</p>
+<p class="block-title">SaaS B2B — récurrent et scalable.</p>
+</div>
+
+<div class="eco-grid">
+<div class="eco-card eco-free">
+<p class="eco-label">Sereno Family</p>
+<p class="eco-price">Gratuit</p>
+<p class="eco-desc">Pour les aidants familiaux. Base d'acquisition et lien avec les structures Pro.</p>
+<div class="eco-features">
+<div class="eco-feature"><i class="ti ti-check"></i>1 proche suivi</div>
+<div class="eco-feature"><i class="ti ti-check"></i>Modules essentiels</div>
+<div class="eco-feature"><i class="ti ti-check"></i>Connexion à une structure Pro</div>
+</div>
+</div>
+<div class="eco-card eco-pro">
+<p class="eco-label">Sereno Pro</p>
+<p class="eco-price">3–5€ / résident / mois</p>
+<p class="eco-desc">Pour EHPAD et SAAD. Facturation mensuelle par résident suivi.</p>
+<div class="eco-features">
+<div class="eco-feature"><i class="ti ti-check"></i>Dashboard multi-résidents</div>
+<div class="eco-feature"><i class="ti ti-check"></i>Alertes automatiques</div>
+<div class="eco-feature"><i class="ti ti-check"></i>Rapports et exports</div>
+<div class="eco-feature"><i class="ti ti-check"></i>Lien famille intégré</div>
+</div>
+</div>
+<div class="eco-card eco-ent">
+<p class="eco-label">Sereno Enterprise</p>
+<p class="eco-price">Sur devis</p>
+<p class="eco-desc">Groupes et réseaux d'établissements. Intégrations sur mesure, SLA garanti.</p>
+<div class="eco-features">
+<div class="eco-feature"><i class="ti ti-check"></i>Multi-établissements</div>
+<div class="eco-feature"><i class="ti ti-check"></i>Intégrations API métier</div>
+<div class="eco-feature"><i class="ti ti-check"></i>Hébergement HDS dédié</div>
+<div class="eco-feature"><i class="ti ti-check"></i>Support et formation inclus</div>
+</div>
+</div>
+</div>
+
+<div class="block">
+<p class="block-label">Potentiel marché</p>
+<p class="block-title">Un marché massif, peu digitalisé.</p>
+<p class="block-text">Si 10% des EHPAD français (750 établissements × 80 résidents moyens × 4€/résident/mois) adoptent Sereno Pro, cela représente un ARR de 28,8M€. Le marché européen (Belgique, Suisse, Espagne, Italie) multiplie ce potentiel par 8.</p>
+</div>
+
+<div class="block">
+<p class="block-label">Feuille de route</p>
+<p class="block-title">De la maquette au déploiement.</p>
+</div>
+
+<div class="mvp-steps">
+<div class="mvp-step"><div class="step-num">1</div><div><p class="step-title">Cadrage juridique et RGPD</p><p class="step-desc">Conformité HDS, politique de confidentialité, CGU — en cours</p></div></div>
+<div class="mvp-step"><div class="step-num">2</div><div><p class="step-title">Tests utilisateurs et itérations</p><p class="step-desc">5 à 10 entretiens avec aidants familiaux et directeurs d'EHPAD sur le prototype</p></div></div>
+<div class="mvp-step"><div class="step-num">3</div><div><p class="step-title">Développement MVP</p><p class="step-desc">Sereno Family + Sereno Pro — budget estimé 80–150k€, équipe 2–3 devs</p></div></div>
+<div class="mvp-step"><div class="step-num">4</div><div><p class="step-title">Pilote avec 2–3 structures</p><p class="step-desc">Déploiement beta sur établissements partenaires — validation terrain</p></div></div>
+<div class="mvp-step"><div class="step-num">5</div><div><p class="step-title">Levée de fonds et scale</p><p class="step-desc">Bpifrance, fonds impact santé, accélérateurs medtech — cible 500k–1M€</p></div></div>
+</div>
+
+<div class="closing">
+<p class="closing-title">Sereno Pro — le chaînon manquant entre les familles et les structures.</p>
+<p class="closing-text">Les EHPAD ont besoin d'outils modernes. Les familles ont besoin de transparence. Sereno Pro connecte les deux — avec la chaleur humaine qui a toujours été au cœur de Sereno.</p>
+</div>
+
+<p class="footer">Sereno Pro — Pitch v1.0 · Juin 2026 · Confidentiel</p>
+
+</div>
+</body>
+</html>
